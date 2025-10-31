@@ -68,6 +68,8 @@ ignore = [
     "E402",   # Module level import not at top (DOCUMENTATION must be first)
     "I001",   # Import block formatting (after DOCUMENTATION)
     "C408",   # Ansible uses dict() for argument_spec, not literals
+    "UP010",  # Ansible requires __future__ imports for compatibility
+    "UP001",  # Ansible requires __metaclass__ for Python 2/3 compatibility
 ]
 "tests/*" = [
     "S101",   # Allow assert in tests

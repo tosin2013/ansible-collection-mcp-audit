@@ -241,7 +241,7 @@ execution_time:
 
 import json
 import time
-from typing import Any, Optional
+from typing import Any
 
 try:
     from litellm import completion
@@ -282,12 +282,12 @@ async def run_llm_integration_test(
     test_prompt: str,
     llm_provider: str,
     llm_model: str,
-    llm_api_key: Optional[str],
-    llm_base_url: Optional[str],
+    llm_api_key: str | None,
+    llm_base_url: str | None,
     max_iterations: int,
-    expected_tool_calls: Optional[list[str]],
+    expected_tool_calls: list[str] | None,
     validate_result: bool,
-    expected_answer: Optional[str],
+    expected_answer: str | None,
 ) -> dict[str, Any]:
     """
     Run LLM integration test with MCP server.

@@ -15,7 +15,7 @@ Provides validation functions for MCP server responses.
 from __future__ import annotations
 
 import json
-from typing import Any, Optional
+from typing import Any
 
 
 class ValidationError(Exception):
@@ -33,7 +33,7 @@ class MCPValidator:
     """
 
     @staticmethod
-    def validate_tool_response(response: Any, expected_result: Optional[Any] = None) -> dict[str, Any]:
+    def validate_tool_response(response: Any, expected_result: Any | None = None) -> dict[str, Any]:
         """
         Validate a tool call response from an MCP server.
 
@@ -94,7 +94,7 @@ class MCPValidator:
         return validation_result
 
     @staticmethod
-    def validate_resource_response(response: Any, expected_content_type: Optional[str] = None) -> dict[str, Any]:
+    def validate_resource_response(response: Any, expected_content_type: str | None = None) -> dict[str, Any]:
         """
         Validate a resource read response from an MCP server.
 

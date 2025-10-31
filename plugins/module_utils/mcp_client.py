@@ -16,7 +16,7 @@ across different transport protocols (stdio, SSE, HTTP).
 from __future__ import annotations
 
 from contextlib import asynccontextmanager
-from typing import Any, ClassVar, Optional
+from typing import Any, ClassVar
 
 try:
     from mcp import ClientSession
@@ -71,10 +71,10 @@ class MCPClient:
     def __init__(
         self,
         transport: str = "stdio",
-        server_command: Optional[str] = None,
-        server_args: Optional[list[str]] = None,
-        server_url: Optional[str] = None,
-        server_headers: Optional[dict[str, str]] = None,
+        server_command: str | None = None,
+        server_args: list[str] | None = None,
+        server_url: str | None = None,
+        server_headers: dict[str, str] | None = None,
         timeout: int = 30,
     ) -> None:
         """
@@ -101,7 +101,7 @@ class MCPClient:
 
         self.transport = transport
         self.timeout = timeout
-        self.session: Optional[ClientSession] = None
+        self.session: ClientSession | None = None
         self._read_stream = None
         self._write_stream = None
 
@@ -187,7 +187,7 @@ class MCPClient:
         except Exception as e:
             raise MCPClientError(f"Failed to list tools: {e!s}") from e
 
-    async def call_tool(self, tool_name: str, arguments: Optional[dict[str, Any]] = None) -> Any:
+    async def call_tool(self, tool_name: str, arguments: dict[str, Any] | None = None) -> Any:
         """
         Call a tool on the MCP server.
 
@@ -270,7 +270,7 @@ class MCPClient:
         except Exception as e:
             raise MCPClientError(f"Failed to list prompts: {e!s}") from e
 
-    async def get_prompt(self, prompt_name: str, arguments: Optional[dict[str, str]] = None) -> Any:
+    async def get_prompt(self, prompt_name: str, arguments: dict[str, str] | None = None) -> Any:
         """
         Get a prompt from the MCP server.
 

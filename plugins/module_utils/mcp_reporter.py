@@ -16,7 +16,7 @@ from __future__ import annotations
 
 import json
 from datetime import datetime
-from typing import Any, Optional
+from typing import Any
 
 try:
     import yaml
@@ -38,10 +38,10 @@ class MCPReporter:
     def create_module_result(
         success: bool,
         status: str,
-        response: Optional[Any] = None,
+        response: Any | None = None,
         execution_time: float = 0.0,
-        error: Optional[str] = None,
-        metadata: Optional[dict[str, Any]] = None,
+        error: str | None = None,
+        metadata: dict[str, Any] | None = None,
         changed: bool = False,
     ) -> dict[str, Any]:
         """
@@ -79,7 +79,7 @@ class MCPReporter:
     def create_test_report(
         summary: dict[str, int],
         tests: list[dict[str, Any]],
-        metadata: Optional[dict[str, Any]] = None,
+        metadata: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
         """
         Create a test suite report structure.
@@ -123,9 +123,9 @@ class MCPReporter:
         success: bool,
         response: Any,
         execution_time: float,
-        arguments: Optional[dict[str, Any]] = None,
-        expected_result: Optional[Any] = None,
-        validation_result: Optional[dict[str, Any]] = None,
+        arguments: dict[str, Any] | None = None,
+        expected_result: Any | None = None,
+        validation_result: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
         """
         Format a tool test result.
@@ -166,8 +166,8 @@ class MCPReporter:
         success: bool,
         response: Any,
         execution_time: float,
-        expected_content_type: Optional[str] = None,
-        validation_result: Optional[dict[str, Any]] = None,
+        expected_content_type: str | None = None,
+        validation_result: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
         """
         Format a resource test result.
@@ -206,8 +206,8 @@ class MCPReporter:
         success: bool,
         response: Any,
         execution_time: float,
-        arguments: Optional[dict[str, str]] = None,
-        validation_result: Optional[dict[str, Any]] = None,
+        arguments: dict[str, str] | None = None,
+        validation_result: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
         """
         Format a prompt test result.
@@ -303,9 +303,9 @@ class MCPReporter:
 def create_result(
     success: bool,
     status: str,
-    response: Optional[Any] = None,
+    response: Any | None = None,
     execution_time: float = 0.0,
-    error: Optional[str] = None,
+    error: str | None = None,
     **kwargs: Any,
 ) -> dict[str, Any]:
     """
