@@ -3,6 +3,8 @@
 #
 # Custom resource server for MCP Audit integration testing
 
+from __future__ import annotations
+
 import asyncio
 
 import mcp.server.stdio
