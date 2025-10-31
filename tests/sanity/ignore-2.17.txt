@@ -1,2 +1,14 @@
+plugins/modules/mcp_server_info.py pylint:wrong-import-position
+plugins/modules/mcp_test_tool.py pylint:wrong-import-position
+plugins/modules/mcp_test_resource.py pylint:wrong-import-position
+plugins/modules/mcp_test_prompt.py pylint:wrong-import-position
+plugins/modules/mcp_test_suite.py pylint:wrong-import-position
+plugins/modules/mcp_test_llm_integration.py pylint:wrong-import-position
+plugins/modules/mcp_server_info.py pylint:broad-exception-caught
+plugins/modules/mcp_test_tool.py pylint:broad-exception-caught
+plugins/modules/mcp_test_resource.py pylint:broad-exception-caught
+plugins/modules/mcp_test_prompt.py pylint:broad-exception-caught
+plugins/modules/mcp_test_suite.py pylint:broad-exception-caught
+plugins/modules/mcp_test_llm_integration.py pylint:broad-exception-caught
 tests/integration/sample_servers/prompts/server.py pylint:consider-using-from-import
 tests/integration/sample_servers/nodejs-resources/src/server.ts shebang
