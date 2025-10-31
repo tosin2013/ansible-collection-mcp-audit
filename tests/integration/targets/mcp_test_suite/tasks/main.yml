@@ -1,0 +1,120 @@
+---
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Integration tests for mcp_test_suite module
+
+- name: Test suite with multiple tool tests
+  mcp.audit.mcp_test_suite:
+    server_command: "{{ ansible_python_interpreter }}"
+    server_args:
+      - "{{ playbook_dir }}/../sample_servers/calculator/server.py"
+    transport: "stdio"
+    tests:
+      - type: "tool"
+        name: "add"
+        arguments:
+          a: 5
+          b: 3
+        expected_result: "8"
+      - type: "tool"
+        name: "calculate_product"
+        arguments:
+          a: 4
+          b: 7
+        expected_result: "28"
+      - type: "tool"
+        name: "get_server_info"
+        arguments: {}
+  register: tool_suite
+
+- name: Verify tool suite results
+  assert:
+    that:
+      - tool_suite.success
+      - tool_suite.summary is defined
+      - tool_suite.summary.total_tests == 3
+      - tool_suite.summary.passed >= 2
+    fail_msg: "Tool suite test failed: {{ tool_suite }}"
+
+- name: Test suite with resource tests
+  mcp.audit.mcp_test_suite:
+    server_command: "{{ ansible_python_interpreter }}"
+    server_args:
+      - "{{ playbook_dir }}/../sample_servers/resources/server.py"
+    transport: "stdio"
+    tests:
+      - type: "resource"
+        uri: "file://test_data/config.json"
+      - type: "resource"
+        uri: "file://test_data/document.txt"
+        expected_content: "This is a test document for MCP resource testing."
+  register: resource_suite
+
+- name: Verify resource suite results
+  assert:
+    that:
+      - resource_suite.success
+      - resource_suite.summary is defined
+      - resource_suite.summary.total_tests == 2
+      - resource_suite.summary.passed == 2
+    fail_msg: "Resource suite test failed: {{ resource_suite }}"
+
+- name: Test suite with prompt tests
+  mcp.audit.mcp_test_suite:
+    server_command: "{{ ansible_python_interpreter }}"
+    server_args:
+      - "{{ playbook_dir }}/../sample_servers/prompts/server.py"
+    transport: "stdio"
+    tests:
+      - type: "prompt"
+        name: "simple-prompt"
+      - type: "prompt"
+        name: "test-prompt"
+        arguments:
+          topic: "integration testing"
+  register: prompt_suite
+
+- name: Verify prompt suite results
+  assert:
+    that:
+      - prompt_suite.success
+      - prompt_suite.summary is defined
+      - prompt_suite.summary.total_tests == 2
+      - prompt_suite.summary.passed == 2
+    fail_msg: "Prompt suite test failed: {{ prompt_suite }}"
+
+- name: Test mixed suite (tools + resources)
+  mcp.audit.mcp_test_suite:
+    server_command: "{{ ansible_python_interpreter }}"
+    server_args:
+      - "{{ playbook_dir }}/../sample_servers/calculator/server.py"
+    transport: "stdio"
+    tests:
+      - type: "tool"
+        name: "add"
+        arguments:
+          a: 10
+          b: 15
+        expected_result: "25"
+      - type: "tool"
+        name: "calculate_sum"
+        arguments:
+          a: 100
+          b: 50
+        expected_result: "150"
+  register: mixed_suite
+
+- name: Verify mixed suite results
+  assert:
+    that:
+      - mixed_suite.success
+      - mixed_suite.summary is defined
+      - mixed_suite.summary.total_tests == 2
+    fail_msg: "Mixed suite test failed: {{ mixed_suite }}"
+
+- name: Display test suite results
+  debug:
+    msg:
+      - "Tool suite: {{ tool_suite.summary.passed }}/{{ tool_suite.summary.total_tests }} passed"
+      - "Resource suite: {{ resource_suite.summary.passed }}/{{ resource_suite.summary.total_tests }} passed"
+      - "Prompt suite: {{ prompt_suite.summary.passed }}/{{ prompt_suite.summary.total_tests }} passed"
+      - "Mixed suite: {{ mixed_suite.summary.passed }}/{{ mixed_suite.summary.total_tests }} passed"

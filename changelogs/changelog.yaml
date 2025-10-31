@@ -1,0 +1,89 @@
+ancestor: null
+releases:
+  1.0.0:
+    changes:
+      known_issues:
+      - 'HTTP transport is not yet implemented. Modules will return a helpful error
+
+        message when HTTP transport is requested. Stdio and SSE transports are fully
+
+        functional.
+
+        '
+      - 'One unit test in ``mcp_test_suite`` has lower coverage (46.88%) due to
+
+        validation logic requiring live connection. This is expected and covered
+
+        by integration tests.
+
+        '
+      major_changes:
+      - "Comprehensive integration testing with real MCP servers, including cross-language\ncompatibility
+        validation (Python \u2194 TypeScript/Node.js).\n"
+      - 'Initial release of five core modules for MCP server testing:
+
+        ``mcp_server_info`` - Discover server capabilities and protocol information.
+
+        ``mcp_test_tool`` - Test individual MCP tools with optional result validation.
+
+        ``mcp_test_resource`` - Validate resource retrieval and content types.
+
+        ``mcp_test_prompt`` - Test prompt templates with argument validation.
+
+        ``mcp_test_suite`` - Run comprehensive test suites with detailed reporting.
+
+        '
+      - 'Production-ready infrastructure with REUSE-compliant licensing (GPL-3.0-or-later),
+
+        comprehensive CI/CD pipelines, and code quality tools (ruff, mypy, yamllint,
+        ansible-lint).
+
+        '
+      - 'Support for multiple transport protocols: stdio (primary), SSE, and HTTP
+        (placeholder).
+
+        '
+      minor_changes:
+      - 'Added three module utilities for MCP interaction:
+
+        ``mcp_client`` - Unified client wrapper for MCP Python SDK with transport
+        abstraction.
+
+        ``mcp_validator`` - Comprehensive validation for all MCP response types.
+
+        ``mcp_reporter`` - JSON/YAML reporting with structured result formatting.
+
+        '
+      - 'Complete documentation including README, CONTRIBUTING, SECURITY policy,
+
+        and comprehensive module documentation with multiple usage examples.
+
+        '
+      - 'Comprehensive test coverage: 70+ unit tests with 71.90% overall coverage,
+
+        full integration test suite with real MCP servers (Python and TypeScript).
+
+        '
+      - 'RHEL 9/10 compatibility with Python 3.9-3.13 and ansible-core 2.15+ support.
+
+        '
+      release_summary: 'This is the initial release of the ``mcp.audit`` Ansible Collection.
+
+        The collection provides modules for testing and auditing Model Context Protocol
+        (MCP) servers.
+
+        It includes five core modules for server discovery, tool testing, resource
+        validation,
+
+        prompt testing, and comprehensive test suites. The collection supports stdio,
+        SSE, and
+
+        HTTP transport protocols and is compatible with Python 3.9+ and RHEL 9/10.
+
+        '
+    fragments:
+    - v1.0.0-known_issues.yaml
+    - v1.0.0-major_changes.yaml
+    - v1.0.0-minor_changes.yaml
+    - v1.0.0-release_summary.yaml
+    release_date: '2024-10-30'

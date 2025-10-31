@@ -1,0 +1,28 @@
+---
+# Debug LLM integration test
+- name: Debug LLM Integration
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  vars:
+    test_servers_path: "{{ playbook_dir }}/sample_servers"
+    python_for_mcp_server: "{{ ansible_python_interpreter | default('/usr/bin/python3') }}"
+
+  tasks:
+    - name: Test with Ollama
+      mcp.audit.mcp_test_llm_integration:
+        test_prompt: "Calculate the sum of 15 and 27"
+        llm_provider: "ollama"
+        llm_model: "phi3.5"
+        llm_base_url: "http://localhost:11434"
+        server_command: "{{ python_for_mcp_server }}"
+        server_args:
+          - "{{ test_servers_path }}/calculator/server.py"
+        transport: "stdio"
+        max_iterations: 10
+      register: result
+      ignore_errors: true
+
+    - name: Display full result
+      debug:
+        var: result

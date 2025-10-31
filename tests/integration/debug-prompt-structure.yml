@@ -1,0 +1,22 @@
+---
+- name: Debug Prompt Result Structure
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  vars:
+    python_interpreter: "/Users/tosinakinosho/workspaces/ansible-collection-mcp-audit/venv/bin/python"
+    test_servers_path: "{{ playbook_dir }}/sample_servers"
+
+  tasks:
+    - name: Test mcp_test_prompt with simple prompt
+      mcp.audit.mcp_test_prompt:
+        server_command: "{{ python_interpreter }}"
+        server_args:
+          - "{{ test_servers_path }}/prompts/server.py"
+        transport: "stdio"
+        prompt_name: "simple-prompt"
+      register: prompt_result
+
+    - name: Display full result structure
+      debug:
+        var: prompt_result

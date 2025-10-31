@@ -1,0 +1,82 @@
+---
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Integration tests for mcp_test_prompt module
+
+- name: Test simple prompt (no arguments)
+  mcp.audit.mcp_test_prompt:
+    server_command: "{{ ansible_python_interpreter }}"
+    server_args:
+      - "{{ playbook_dir }}/../sample_servers/prompts/server.py"
+    transport: "stdio"
+    prompt_name: "simple-prompt"
+  register: simple_prompt
+
+- name: Verify simple prompt
+  assert:
+    that:
+      - simple_prompt.success
+      - simple_prompt.messages is defined
+      - simple_prompt.messages | length > 0
+    fail_msg: "Simple prompt test failed: {{ simple_prompt }}"
+
+- name: Test prompt with required argument
+  mcp.audit.mcp_test_prompt:
+    server_command: "{{ ansible_python_interpreter }}"
+    server_args:
+      - "{{ playbook_dir }}/../sample_servers/prompts/server.py"
+    transport: "stdio"
+    prompt_name: "test-prompt"
+    prompt_arguments:
+      topic: "testing Ansible modules"
+  register: topic_prompt
+
+- name: Verify topic prompt
+  assert:
+    that:
+      - topic_prompt.success
+      - topic_prompt.messages is defined
+      - topic_prompt.messages | length > 0
+    fail_msg: "Topic prompt test failed: {{ topic_prompt }}"
+
+- name: Test prompt with optional and required arguments
+  mcp.audit.mcp_test_prompt:
+    server_command: "{{ ansible_python_interpreter }}"
+    server_args:
+      - "{{ playbook_dir }}/../sample_servers/prompts/server.py"
+    transport: "stdio"
+    prompt_name: "test-prompt"
+    prompt_arguments:
+      context: "Working on integration tests"
+      topic: "MCP server testing"
+  register: full_prompt
+
+- name: Verify full prompt
+  assert:
+    that:
+      - full_prompt.success
+      - full_prompt.messages is defined
+      - full_prompt.messages | length > 1
+    fail_msg: "Full prompt test failed: {{ full_prompt }}"
+
+- name: Test invalid prompt (should fail gracefully)
+  mcp.audit.mcp_test_prompt:
+    server_command: "{{ ansible_python_interpreter }}"
+    server_args:
+      - "{{ playbook_dir }}/../sample_servers/prompts/server.py"
+    transport: "stdio"
+    prompt_name: "nonexistent-prompt"
+  register: invalid_prompt_result
+  ignore_errors: true
+
+- name: Verify invalid prompt handling
+  assert:
+    that:
+      - invalid_prompt_result.failed
+    fail_msg: "Invalid prompt should have failed"
+
+- name: Display test results
+  debug:
+    msg:
+      - "Simple prompt messages: {{ simple_prompt.messages | length }}"
+      - "Topic prompt messages: {{ topic_prompt.messages | length }}"
+      - "Full prompt messages: {{ full_prompt.messages | length }}"

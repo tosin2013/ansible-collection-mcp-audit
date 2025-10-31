@@ -1,0 +1,69 @@
+---
+# Collection metadata (galaxy.yml)
+# See https://docs.ansible.com/ansible/latest/dev_guide/developing_collections_distributing.html
+# for full specification
+
+namespace: mcp
+name: audit
+version: 1.0.0
+
+readme: README.md
+
+description: >-
+  Ansible collection for testing and auditing Model Context Protocol (MCP) servers.
+  Provides modules to verify MCP server implementations, test tools, resources,
+  and prompts, with comprehensive reporting capabilities.
+
+authors:
+  - Tosin Akinosho <tosin@example.com> (@tosin2013)
+
+license_file: COPYING
+
+tags:
+  - mcp
+  - model_context_protocol
+  - audit
+  - testing
+  - validation
+  - api_testing
+  - integration_testing
+  - tools
+  - resources
+  - prompts
+
+repository: https://github.com/tosin2013/ansible-collection-mcp-audit
+documentation: https://github.com/tosin2013/ansible-collection-mcp-audit/blob/main/README.md
+homepage: https://github.com/tosin2013/ansible-collection-mcp-audit
+issues: https://github.com/tosin2013/ansible-collection-mcp-audit/issues
+
+dependencies: {}
+
+build_ignore:
+  - .gitignore
+  - .git
+  - .github
+  - .vscode
+  - '*.pyc'
+  - '*.retry'
+  - tests/output
+  - '*.tar.gz'
+  - docs/adrs/GAPS-ANALYSIS.md
+  - docs/adrs/PRD.md
+  - .mcp-server-context.md
+  - .claude
+  - .ansible
+  - collections
+  - venv
+  - .mypy_cache
+  - .ruff_cache
+  - .pytest_cache
+  - __pycache__
+  - node_modules
+  - requirements-dev.txt
+  - Makefile
+  - .pre-commit-config.yaml
+  - pyproject.toml
+  - PRD.md
+  - REUSE.toml
+  - docs/IMPLEMENTATION-PLAN.md
+  - docs/context

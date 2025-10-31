@@ -1,0 +1,32 @@
+# ansible-lint configuration
+# See ADR-0011 for code quality tool selection
+
+---
+profile: production  # Strictest profile
+
+exclude_paths:
+  - .github/
+  - tests/output/
+  - .venv/
+  - build/
+  - dist/
+  - .claude/
+  - htmlcov/
+
+skip_list:
+  - experimental  # Skip experimental rules
+  - jinja[spacing]  # Allow flexible Jinja spacing
+
+warn_list:
+  - unnamed-task  # Warn but don't fail on unnamed tasks
+
+kinds:
+  - yaml: "*.yaml.j2"
+  - yaml: "*.yml.j2"
+
+# Enable all rules by default
+enable_list:
+  - args
+  - empty-string-compare
+  - no-log-password
+  - no-same-owner

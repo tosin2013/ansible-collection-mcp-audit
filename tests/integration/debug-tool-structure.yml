@@ -1,0 +1,26 @@
+---
+- name: Debug Tool Result Structure
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  vars:
+    python_interpreter: "/Users/tosinakinosho/workspaces/ansible-collection-mcp-audit/venv/bin/python"
+    test_servers_path: "{{ playbook_dir }}/sample_servers"
+
+  tasks:
+    - name: Test mcp_test_tool with add function
+      mcp.audit.mcp_test_tool:
+        server_command: "{{ python_interpreter }}"
+        server_args:
+          - "{{ test_servers_path }}/calculator/server.py"
+        transport: "stdio"
+        tool_name: "add"
+        tool_arguments:
+          a: 5
+          b: 3
+        expected_result: "8"
+      register: tool_result
+
+    - name: Display full result structure
+      debug:
+        var: tool_result

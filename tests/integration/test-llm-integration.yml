@@ -1,0 +1,114 @@
+---
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Integration test for mcp_test_llm_integration module
+
+- name: Test LLM Integration Module
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  vars:
+    test_servers_path: "{{ playbook_dir }}/sample_servers"
+    python_for_mcp_server: "{{ ansible_python_interpreter | default('/usr/bin/python3') }}"
+
+  tasks:
+    - name: Test 1 - Basic calculation with Ollama
+      mcp.audit.mcp_test_llm_integration:
+        test_prompt: "Calculate the sum of 15 and 27"
+        llm_provider: "ollama"
+        llm_model: "phi3.5"
+        llm_base_url: "http://localhost:11434"
+        server_command: "{{ python_for_mcp_server }}"
+        server_args:
+          - "{{ test_servers_path }}/calculator/server.py"
+        transport: "stdio"
+        expected_tool_calls: ["calculate_sum"]
+        validate_result: true
+        expected_answer: "42"
+        max_iterations: 5
+      register: test1_result
+
+    - name: Verify Test 1
+      assert:
+        that:
+          - test1_result.success
+          - test1_result.tool_calls_made | length > 0
+          - '"calculate_sum" in test1_result.tool_calls_made'
+          - test1_result.final_answer is defined
+          - test1_result.validation.expected_tools_called
+          - test1_result.validation.answer_matches
+        success_msg: "✓ Test 1 passed: LLM correctly called 'calculate_sum' tool and got answer 42"
+        fail_msg: "✗ Test 1 failed"
+
+    - name: Test 2 - Multiplication test
+      mcp.audit.mcp_test_llm_integration:
+        test_prompt: "What is 6 multiplied by 7? Use the calculator tool to compute this."
+        llm_provider: "ollama"
+        llm_model: "phi3.5"
+        llm_base_url: "http://localhost:11434"
+        server_command: "{{ python_for_mcp_server }}"
+        server_args:
+          - "{{ test_servers_path }}/calculator/server.py"
+        transport: "stdio"
+        expected_tool_calls: ["calculate_product"]
+        max_iterations: 5
+      register: test2_result
+
+    - name: Verify Test 2
+      assert:
+        that:
+          - test2_result.success
+          - test2_result.tool_calls_made | length > 0
+          - '"calculate_product" in test2_result.tool_calls_made'
+          - test2_result.final_answer is defined
+        success_msg: "✓ Test 2 passed: LLM correctly called 'calculate_product' tool"
+        fail_msg: "✗ Test 2 failed"
+
+    - name: Test 3 - No validation (just execute)
+      mcp.audit.mcp_test_llm_integration:
+        test_prompt: "Divide 100 by 4 using the available calculator tools"
+        llm_provider: "ollama"
+        llm_model: "phi3.5"
+        llm_base_url: "http://localhost:11434"
+        server_command: "{{ python_for_mcp_server }}"
+        server_args:
+          - "{{ test_servers_path }}/calculator/server.py"
+        transport: "stdio"
+        max_iterations: 5
+      register: test3_result
+
+    - name: Verify Test 3
+      assert:
+        that:
+          - test3_result.success
+          - test3_result.final_answer is defined
+        success_msg: "✓ Test 3 passed: LLM completed task without validation"
+        fail_msg: "✗ Test 3 failed"
+
+    - name: Display Test Summary
+      debug:
+        msg:
+          - "==================== LLM Integration Test Summary ===================="
+          - "✓ All 3 LLM integration tests passed!"
+          - ""
+          - "Test 1 (Addition with validation):"
+          - "  - Tools called: {{ test1_result.tool_calls_made }}"
+          - "  - Final answer: {{ test1_result.final_answer }}"
+          - "  - Iterations: {{ test1_result.total_iterations }}"
+          - "  - Execution time: {{ test1_result.execution_time }}s"
+          - "  - Validation: {{ 'PASSED' if test1_result.validation.answer_matches else 'FAILED' }}"
+          - ""
+          - "Test 2 (Multiplication):"
+          - "  - Tools called: {{ test2_result.tool_calls_made }}"
+          - "  - Final answer: {{ test2_result.final_answer }}"
+          - "  - Iterations: {{ test2_result.total_iterations }}"
+          - "  - Execution time: {{ test2_result.execution_time }}s"
+          - ""
+          - "Test 3 (Division - no validation):"
+          - "  - Tools called: {{ test3_result.tool_calls_made }}"
+          - "  - Final answer: {{ test3_result.final_answer }}"
+          - "  - Iterations: {{ test3_result.total_iterations }}"
+          - "  - Execution time: {{ test3_result.execution_time }}s"
+          - ""
+          - "🎉 Ollama (phi3.5) + MCP Calculator Server integration validated!"
+          - "🎉 LLM successfully decided when to call tools and interpreted results!"
+          - "===================================================================="

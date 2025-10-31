@@ -1,0 +1,94 @@
+---
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Integration tests for mcp_test_resource module
+
+- name: Test JSON resource
+  mcp.audit.mcp_test_resource:
+    server_command: "{{ ansible_python_interpreter }}"
+    server_args:
+      - "{{ playbook_dir }}/../sample_servers/resources/server.py"
+    transport: "stdio"
+    resource_uri: "file://test_data/config.json"
+  register: json_resource
+
+- name: Verify JSON resource
+  assert:
+    that:
+      - json_resource.success
+      - json_resource.content is defined
+      - '"environment" in json_resource.content'
+    fail_msg: "JSON resource test failed: {{ json_resource }}"
+
+- name: Test text resource
+  mcp.audit.mcp_test_resource:
+    server_command: "{{ ansible_python_interpreter }}"
+    server_args:
+      - "{{ playbook_dir }}/../sample_servers/resources/server.py"
+    transport: "stdio"
+    resource_uri: "file://test_data/document.txt"
+  register: text_resource
+
+- name: Verify text resource
+  assert:
+    that:
+      - text_resource.success
+      - text_resource.content is defined
+      - '"test document" in text_resource.content'
+    fail_msg: "Text resource test failed: {{ text_resource }}"
+
+- name: Test YAML resource
+  mcp.audit.mcp_test_resource:
+    server_command: "{{ ansible_python_interpreter }}"
+    server_args:
+      - "{{ playbook_dir }}/../sample_servers/resources/server.py"
+    transport: "stdio"
+    resource_uri: "file://test_data/data.yaml"
+  register: yaml_resource
+
+- name: Verify YAML resource
+  assert:
+    that:
+      - yaml_resource.success
+      - yaml_resource.content is defined
+    fail_msg: "YAML resource test failed: {{ yaml_resource }}"
+
+- name: Test resource with expected content
+  mcp.audit.mcp_test_resource:
+    server_command: "{{ ansible_python_interpreter }}"
+    server_args:
+      - "{{ playbook_dir }}/../sample_servers/resources/server.py"
+    transport: "stdio"
+    resource_uri: "file://test_data/document.txt"
+    expected_content: "This is a test document for MCP resource testing."
+  register: expected_content_test
+
+- name: Verify expected content validation
+  assert:
+    that:
+      - expected_content_test.success
+      - expected_content_test.validation.passed
+    fail_msg: "Expected content validation failed: {{ expected_content_test }}"
+
+- name: Test invalid resource (should fail gracefully)
+  mcp.audit.mcp_test_resource:
+    server_command: "{{ ansible_python_interpreter }}"
+    server_args:
+      - "{{ playbook_dir }}/../sample_servers/resources/server.py"
+    transport: "stdio"
+    resource_uri: "file://test_data/nonexistent.txt"
+  register: invalid_resource_result
+  ignore_errors: true
+
+- name: Verify invalid resource handling
+  assert:
+    that:
+      - invalid_resource_result.failed
+    fail_msg: "Invalid resource should have failed"
+
+- name: Display test results
+  debug:
+    msg:
+      - "JSON resource: {{ json_resource.content[:50] }}..."
+      - "Text resource: {{ text_resource.content[:50] }}..."
+      - "YAML resource retrieved successfully"
+      - "Expected content validation: {{ expected_content_test.validation.passed }}"

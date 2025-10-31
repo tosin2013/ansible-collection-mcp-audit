@@ -1,0 +1,29 @@
+---
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Minimal test to debug stdio connection issue
+
+- name: Simple MCP Test
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  vars:
+    python_interpreter: "/Users/tosinakinosho/workspaces/ansible-collection-mcp-audit/venv/bin/python"
+
+  tasks:
+    - name: Display Python interpreter being used
+      debug:
+        msg: "Using Python: {{ python_interpreter }}"
+
+    - name: Test mcp_server_info with calculator server
+      mcp.audit.mcp_server_info:
+        server_command: "{{ python_interpreter }}"
+        server_args:
+          - "{{ playbook_dir }}/sample_servers/calculator/server.py"
+        transport: "stdio"
+        timeout: 30
+      register: result
+
+    - name: Display result
+      debug:
+        var: result

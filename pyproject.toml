@@ -1,0 +1,135 @@
+# pyproject.toml - Python project configuration
+# See ADR-0011 for code quality tool selection and rationale
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ansible-collection-mcp-audit"
+version = "1.0.0"
+description = "Ansible collection for testing and auditing Model Context Protocol (MCP) servers"
+readme = "README.md"
+requires-python = ">=3.9"
+license = {text = "GPL-3.0-or-later"}
+authors = [
+    {name = "Tosin Akinosho", email = "tosin@example.com"}
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: System Administrators",
+    "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: System :: Systems Administration",
+]
+
+# Ruff configuration (ADR-0011)
+[tool.ruff]
+target-version = "py39"  # Minimum Python version (ADR-0013)
+line-length = 120
+exclude = [
+    ".git",
+    ".venv",
+    "__pycache__",
+    "build",
+    "dist",
+    "*.egg-info",
+]
+
+[tool.ruff.lint]
+# Enable comprehensive rule sets
+select = [
+    "E",      # pycodestyle errors
+    "W",      # pycodestyle warnings
+    "F",      # Pyflakes
+    "I",      # isort
+    "N",      # pep8-naming
+    "UP",     # pyupgrade
+    "B",      # flake8-bugbear
+    "C4",     # flake8-comprehensions
+    "SIM",    # flake8-simplify
+    "RUF",    # Ruff-specific rules
+]
+ignore = [
+    "E501",   # Line too long (handled by formatter)
+    "B008",   # Do not perform function call in argument defaults
+]
+
+[tool.ruff.lint.per-file-ignores]
+"plugins/modules/*.py" = [
+    "N802",   # Ansible modules use lowercase function names
+    "E402",   # Module level import not at top (DOCUMENTATION must be first)
+    "I001",   # Import block formatting (after DOCUMENTATION)
+    "C408",   # Ansible uses dict() for argument_spec, not literals
+]
+"tests/*" = [
+    "S101",   # Allow assert in tests
+]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "lf"
+
+# Mypy configuration (ADR-0011)
+[tool.mypy]
+python_version = "3.9"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = false  # Start lenient, increase later
+check_untyped_defs = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_no_return = true
+warn_unreachable = true
+strict_optional = true
+
+# Per-module configuration
+[[tool.mypy.overrides]]
+module = "plugins.module_utils.*"
+disallow_untyped_defs = true  # Strict for shared code
+
+[[tool.mypy.overrides]]
+module = "tests.*"
+disallow_untyped_defs = false  # Lenient for tests
+
+# Pytest configuration (ADR-0005)
+[tool.pytest.ini_options]
+testpaths = ["tests/unit"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+addopts = [
+    "-v",
+    "--cov=plugins",
+    "--cov-report=term-missing",
+    "--cov-report=html",
+    "--cov-report=xml",
+]
+
+# Coverage configuration
+[tool.coverage.run]
+source = ["plugins"]
+omit = [
+    "*/tests/*",
+    "*/__pycache__/*",
+    "*/site-packages/*",
+]
+
+[tool.coverage.report]
+precision = 2
+show_missing = true
+skip_covered = false
+
+[tool.coverage.html]
+directory = "htmlcov"

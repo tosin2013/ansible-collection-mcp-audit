@@ -1,0 +1,63 @@
+---
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Integration tests for mcp_server_info module
+
+- name: Test mcp_server_info with calculator server (stdio)
+  mcp.audit.mcp_server_info:
+    server_command: "{{ ansible_python_interpreter }}"
+    server_args:
+      - "{{ playbook_dir }}/../sample_servers/calculator/server.py"
+    transport: "stdio"
+  register: calculator_info
+
+- name: Verify calculator server info
+  assert:
+    that:
+      - calculator_info is defined
+      - calculator_info.server_name is defined
+      - calculator_info.server_version is defined
+      - calculator_info.capabilities is defined
+      - calculator_info.tool_count is defined
+      - calculator_info.tool_count == 4
+    fail_msg: "Calculator server info validation failed"
+
+- name: Test mcp_server_info with prompt server (stdio)
+  mcp.audit.mcp_server_info:
+    server_command: "{{ ansible_python_interpreter }}"
+    server_args:
+      - "{{ playbook_dir }}/../sample_servers/prompts/server.py"
+    transport: "stdio"
+  register: prompt_info
+
+- name: Verify prompt server info
+  assert:
+    that:
+      - prompt_info is defined
+      - prompt_info.server_name is defined
+      - prompt_info.prompt_count is defined
+      - prompt_info.prompt_count == 2
+    fail_msg: "Prompt server info validation failed"
+
+- name: Test mcp_server_info with resource server (stdio)
+  mcp.audit.mcp_server_info:
+    server_command: "{{ ansible_python_interpreter }}"
+    server_args:
+      - "{{ playbook_dir }}/../sample_servers/resources/server.py"
+    transport: "stdio"
+  register: resource_info
+
+- name: Verify resource server info
+  assert:
+    that:
+      - resource_info is defined
+      - resource_info.server_name is defined
+      - resource_info.resource_count is defined
+      - resource_info.resource_count == 3
+    fail_msg: "Resource server info validation failed"
+
+- name: Display test results
+  debug:
+    msg:
+      - "Calculator server: {{ calculator_info.server_name }} ({{ calculator_info.tool_count }} tools)"
+      - "Prompt server: {{ prompt_info.server_name }} ({{ prompt_info.prompt_count }} prompts)"
+      - "Resource server: {{ resource_info.server_name }} ({{ resource_info.resource_count }} resources)"

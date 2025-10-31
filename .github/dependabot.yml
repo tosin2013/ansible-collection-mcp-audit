@@ -1,0 +1,31 @@
+# Dependabot configuration
+# See ADR-0015 for security policy
+
+---
+version: 2
+updates:
+  # Python dependencies
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+    reviewers:
+      - "tosin2013"
+    labels:
+      - "dependencies"
+      - "security"
+    commit-message:
+      prefix: "security"
+      include: "scope"
+
+  # GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    reviewers:
+      - "tosin2013"
+    labels:
+      - "dependencies"
+      - "github-actions"

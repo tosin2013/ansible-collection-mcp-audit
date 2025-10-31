@@ -1,0 +1,139 @@
+---
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Simple test runner for integration tests
+
+- name: Run MCP Audit Integration Tests
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  vars:
+    test_servers_path: "{{ playbook_dir }}/sample_servers"
+    # Use the Python interpreter that was passed via -e ansible_python_interpreter
+    # If not provided, default to the system python3
+    python_for_mcp_server: "{{ ansible_python_interpreter | default('/usr/bin/python3') }}"
+
+  tasks:
+    - name: Test mcp_server_info with calculator server
+      mcp.audit.mcp_server_info:
+        server_command: "{{ python_for_mcp_server }}"
+        server_args:
+          - "{{ test_servers_path }}/calculator/server.py"
+        transport: "stdio"
+      register: server_info_result
+
+    - name: Verify server info result
+      assert:
+        that:
+          - server_info_result is defined
+          - server_info_result.server_info is defined
+          - server_info_result.server_info.server_name is defined
+          - server_info_result.server_info.available_tools == 4
+        success_msg: "✓ mcp_server_info test passed"
+        fail_msg: "✗ mcp_server_info test failed"
+
+    - name: Test mcp_test_tool with add function
+      mcp.audit.mcp_test_tool:
+        server_command: "{{ python_for_mcp_server }}"
+        server_args:
+          - "{{ test_servers_path }}/calculator/server.py"
+        transport: "stdio"
+        tool_name: "add"
+        tool_arguments:
+          a: 5
+          b: 3
+        expected_result: "8"
+      register: tool_result
+
+    - name: Verify tool result
+      assert:
+        that:
+          - tool_result.success
+          - tool_result.tool_result.content[0].text == "8"
+        success_msg: "✓ mcp_test_tool test passed"
+        fail_msg: "✗ mcp_test_tool test failed"
+
+    - name: Test mcp_test_resource with Node.js server (cross-language compatibility)
+      mcp.audit.mcp_test_resource:
+        server_command: "node"
+        server_args:
+          - "{{ test_servers_path }}/nodejs-resources/dist/server.js"
+        transport: "stdio"
+        resource_uri: "file://test_data/config.json"
+      register: resource_result
+
+    - name: Verify resource result
+      assert:
+        that:
+          - resource_result.success
+          - resource_result.resource_content is defined
+          - resource_result.resource_content.contents is defined
+          - resource_result.resource_content.contents | length > 0
+          - '"environment" in resource_result.resource_content.contents[0].text'
+        success_msg: "✓ mcp_test_resource test passed (TypeScript ↔ Python)"
+        fail_msg: "✗ mcp_test_resource test failed"
+
+    - name: Test mcp_test_prompt with simple prompt
+      mcp.audit.mcp_test_prompt:
+        server_command: "{{ python_for_mcp_server }}"
+        server_args:
+          - "{{ test_servers_path }}/prompts/server.py"
+        transport: "stdio"
+        prompt_name: "simple-prompt"
+      register: prompt_result
+
+    - name: Verify prompt result
+      assert:
+        that:
+          - prompt_result.success
+          - prompt_result.prompt_result is defined
+          - prompt_result.prompt_result.messages is defined
+          - prompt_result.prompt_result.messages | length > 0
+        success_msg: "✓ mcp_test_prompt test passed"
+        fail_msg: "✗ mcp_test_prompt test failed"
+
+    - name: Test mcp_test_suite with multiple tests
+      mcp.audit.mcp_test_suite:
+        server_command: "{{ python_for_mcp_server }}"
+        server_args:
+          - "{{ test_servers_path }}/calculator/server.py"
+        transport: "stdio"
+        tests:
+          - type: "tool"
+            name: "add"
+            arguments:
+              a: 10
+              b: 20
+            expected_result: "30"
+          - type: "tool"
+            name: "calculate_product"
+            arguments:
+              a: 5
+              b: 6
+            expected_result: "30"
+      register: suite_result
+
+    - name: Verify suite result
+      assert:
+        that:
+          - suite_result.success
+          - suite_result.summary.total_tests == 2
+          - suite_result.summary.passed == 2
+        success_msg: "✓ mcp_test_suite test passed"
+        fail_msg: "✗ mcp_test_suite test failed"
+
+    - name: Display summary
+      debug:
+        msg:
+          - "==================== Integration Test Summary ===================="
+          - "✓ All 5 modules tested successfully!"
+          - "✓ Cross-language compatibility validated (TypeScript ↔ Python)!"
+          - ""
+          - "Test Results:"
+          - "  - mcp_server_info: Discovered {{ server_info_result.server_info.available_tools }} tools (Python server)"
+          - "  - mcp_test_tool: 5 + 3 = {{ tool_result.tool_result.content[0].text }} (Python server)"
+          - "  - mcp_test_resource: Retrieved JSON config (Node.js server ✨)"
+          - "  - mcp_test_prompt: Generated prompt messages (Python server)"
+          - "  - mcp_test_suite: {{ suite_result.summary.passed }}/{{ suite_result.summary.total_tests }} tests passed (Python server)"
+          - ""
+          - "🎉 Python client successfully tested against both Python and TypeScript MCP servers!"
+          - "================================================================"

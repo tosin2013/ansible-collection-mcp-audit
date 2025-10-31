@@ -1,0 +1,16 @@
+# Production dependencies for MCP Audit Ansible Collection
+# See ADR-0002 for MCP SDK selection
+# See ADR-0013 for version compatibility requirements
+
+# MCP Python SDK - Official SDK for Model Context Protocol
+# Minimum version 1.19.0 provides stdio, SSE, and HTTP transports
+mcp>=1.19.0
+
+# LiteLLM - Unified interface to 100+ LLM providers
+# See ADR-0016 for LiteLLM integration strategy
+# Optional dependency for mcp_test_llm_integration module
+litellm>=1.0.0
+
+# Ansible Core - Minimum version for RHEL 9 support
+# See ADR-0013: Python 3.9+ and ansible-core 2.15+ for RHEL 9/10
+ansible-core>=2.15.0,<2.18.0

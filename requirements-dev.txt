@@ -1,0 +1,30 @@
+# Development dependencies for MCP Audit Ansible Collection
+# See ADR-0011 for code quality tool selection
+
+# Include production dependencies
+-r requirements.txt
+
+# Code quality tools (ADR-0011)
+ruff>=0.3.0                  # Fast Python linter and formatter (replaces flake8, black, isort)
+mypy>=1.8.0                  # Type checking
+yamllint>=1.35.0             # YAML linting
+ansible-lint>=24.2.0         # Ansible best practices
+reuse>=3.0.0                 # License compliance (ADR-0008)
+pre-commit>=3.6.0            # Pre-commit hooks
+
+# Testing tools (ADR-0005)
+pytest>=7.4.0                # Unit testing framework
+pytest-cov>=4.1.0            # Coverage reporting
+pytest-ansible>=3.1.0        # Ansible-specific pytest helpers
+pytest-mock>=3.12.0          # Mocking support
+pytest-asyncio>=1.2.0        # Async test support
+
+# Type stubs for mypy
+types-PyYAML>=6.0.12.12      # Type stubs for PyYAML
+
+# Changelog management (ADR-0010)
+antsibull-changelog>=0.27.0  # Changelog generation for Ansible collections
+
+# Documentation (optional, for local doc building)
+# sphinx>=7.2.0
+# sphinx-rtd-theme>=2.0.0

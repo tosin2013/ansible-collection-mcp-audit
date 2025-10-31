@@ -1,0 +1,4 @@
+---
+# meta/runtime.yml - Collection runtime metadata
+# See ADR-0013 for version compatibility requirements
+requires_ansible: '>=2.15.0'
