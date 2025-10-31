@@ -1,0 +1,20 @@
+# Ansible sanity test ignore list for ansible-core 2.19
+# Standard Ansible module patterns - imports after DOCUMENTATION block
+plugins/modules/mcp_server_info.py pylint:wrong-import-position
+plugins/modules/mcp_test_tool.py pylint:wrong-import-position
+plugins/modules/mcp_test_resource.py pylint:wrong-import-position
+plugins/modules/mcp_test_prompt.py pylint:wrong-import-position
+plugins/modules/mcp_test_suite.py pylint:wrong-import-position
+plugins/modules/mcp_test_llm_integration.py pylint:wrong-import-position
+
+# Standard Ansible module patterns - broad exception handling for stability
+plugins/modules/mcp_server_info.py pylint:broad-exception-caught
+plugins/modules/mcp_test_tool.py pylint:broad-exception-caught
+plugins/modules/mcp_test_resource.py pylint:broad-exception-caught
+plugins/modules/mcp_test_prompt.py pylint:broad-exception-caught
+plugins/modules/mcp_test_suite.py pylint:broad-exception-caught
+plugins/modules/mcp_test_llm_integration.py pylint:broad-exception-caught
+
+# Third-party sample MCP servers (not part of collection, used only for integration testing)
+tests/integration/sample_servers/prompts/server.py pylint:consider-using-from-import
+tests/integration/sample_servers/nodejs-resources/src/server.ts shebang
