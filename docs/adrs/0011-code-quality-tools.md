@@ -282,7 +282,7 @@ version = 1
 
 [[annotations]]
 path = ["plugins/modules/**.py", "plugins/module_utils/**.py"]
-SPDX-FileCopyrightText = "2024 Tosin Akinosho <tosin@example.com>"
+SPDX-FileCopyrightText = "2025 Tosin Akinosho <tosin.akinosho@gmail.com>"
 SPDX-License-Identifier = "GPL-3.0-or-later"
 ```
 

@@ -1,36 +1,36 @@
 version = 1
 SPDX-PackageName = "mcp.audit"
-SPDX-PackageSupplier = "Tosin Akinosho <tosin@example.com>"
+SPDX-PackageSupplier = "Tosin Akinosho <tosin.akinosho@gmail.com>"
 SPDX-PackageDownloadLocation = "https://github.com/tosin2013/ansible-collection-mcp-audit"
 
 # Ansible modules - GPL-3.0-or-later only (Galaxy requirement)
 [[annotations]]
 path = ["plugins/modules/**.py", "tests/**.py", "roles/**.yml", "playbooks/**.yml", "tests/**.yml"]
-SPDX-FileCopyrightText = "2024 Tosin Akinosho <tosin@example.com>"
+SPDX-FileCopyrightText = "2025 Tosin Akinosho <tosin.akinosho@gmail.com>"
 SPDX-License-Identifier = "GPL-3.0-or-later"
 
 # Module utilities - Dual licensed for reusability
 [[annotations]]
 path = "plugins/module_utils/**.py"
-SPDX-FileCopyrightText = "2024 Tosin Akinosho <tosin@example.com>"
+SPDX-FileCopyrightText = "2025 Tosin Akinosho <tosin.akinosho@gmail.com>"
 SPDX-License-Identifier = "GPL-3.0-or-later OR BSD-2-Clause"
 
 # Python init files
 [[annotations]]
 path = "plugins/__init__.py"
-SPDX-FileCopyrightText = "2024 Tosin Akinosho <tosin@example.com>"
+SPDX-FileCopyrightText = "2025 Tosin Akinosho <tosin.akinosho@gmail.com>"
 SPDX-License-Identifier = "GPL-3.0-or-later"
 
 # Documentation files
 [[annotations]]
 path = ["*.md", "docs/**.md", "SECURITY.md", "tests/**.md"]
-SPDX-FileCopyrightText = "2024 Tosin Akinosho <tosin@example.com>"
+SPDX-FileCopyrightText = "2025 Tosin Akinosho <tosin.akinosho@gmail.com>"
 SPDX-License-Identifier = "GPL-3.0-or-later"
 
 # Test configuration files
 [[annotations]]
 path = ["tests/integration/ansible.cfg", "tests/integration/**.txt", "tests/sanity/**.txt", "tests/integration/test_module_direct.json"]
-SPDX-FileCopyrightText = "2024 Tosin Akinosho <tosin@example.com>"
+SPDX-FileCopyrightText = "2025 Tosin Akinosho <tosin.akinosho@gmail.com>"
 SPDX-License-Identifier = "GPL-3.0-or-later"
 
 # Third-party test servers with MIT license
@@ -50,35 +50,35 @@ SPDX-License-Identifier = "MIT"
 # Collection metadata
 [[annotations]]
 path = "galaxy.yml"
-SPDX-FileCopyrightText = "2024 Tosin Akinosho <tosin@example.com>"
+SPDX-FileCopyrightText = "2025 Tosin Akinosho <tosin.akinosho@gmail.com>"
 SPDX-License-Identifier = "GPL-3.0-or-later"
 
 # Python configuration
 [[annotations]]
 path = ["pyproject.toml", "requirements.txt", "requirements-dev.txt"]
-SPDX-FileCopyrightText = "2024 Tosin Akinosho <tosin@example.com>"
+SPDX-FileCopyrightText = "2025 Tosin Akinosho <tosin.akinosho@gmail.com>"
 SPDX-License-Identifier = "GPL-3.0-or-later"
 
 # Configuration files
 [[annotations]]
 path = [".ansible-lint", ".yamllint", ".pre-commit-config.yaml", ".gitignore"]
-SPDX-FileCopyrightText = "2024 Tosin Akinosho <tosin@example.com>"
+SPDX-FileCopyrightText = "2025 Tosin Akinosho <tosin.akinosho@gmail.com>"
 SPDX-License-Identifier = "GPL-3.0-or-later"
 
 # Build and CI/CD
 [[annotations]]
 path = ["Makefile", ".github/**.yml"]
-SPDX-FileCopyrightText = "2024 Tosin Akinosho <tosin@example.com>"
+SPDX-FileCopyrightText = "2025 Tosin Akinosho <tosin.akinosho@gmail.com>"
 SPDX-License-Identifier = "GPL-3.0-or-later"
 
 # Changelog files
 [[annotations]]
 path = ["changelogs/**", "CHANGELOG.rst"]
-SPDX-FileCopyrightText = "2024 Tosin Akinosho <tosin@example.com>"
+SPDX-FileCopyrightText = "2025 Tosin Akinosho <tosin.akinosho@gmail.com>"
 SPDX-License-Identifier = "GPL-3.0-or-later"
 
 # Collection metadata
 [[annotations]]
 path = "meta/runtime.yml"
-SPDX-FileCopyrightText = "2024 Tosin Akinosho <tosin@example.com>"
+SPDX-FileCopyrightText = "2025 Tosin Akinosho <tosin.akinosho@gmail.com>"
 SPDX-License-Identifier = "GPL-3.0-or-later"

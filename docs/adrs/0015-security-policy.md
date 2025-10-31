@@ -58,7 +58,7 @@ Instead, please report security vulnerabilities using one of these methods:
 3. Fill out the form with details
 
 ### Email
-If you prefer email, send to: **tosin@example.com**
+If you prefer email, send to: **tosin.akinosho@gmail.com**
 - Subject line: `[SECURITY] MCP Audit Collection: [Brief Description]`
 - Include:
   - Description of the vulnerability
@@ -192,7 +192,7 @@ cat ~/.ansible/collections/ansible_collections/mcp/audit/CHANGELOG.rst
 
 ## Contact
 
-- **Security Issues**: tosin@example.com (private)
+- **Security Issues**: tosin.akinosho@gmail.com (private)
 - **General Questions**: [GitHub Discussions](https://github.com/tosin2013/ansible-collection-mcp-audit/discussions)
 - **Maintainer**: @tosin2013
 
@@ -455,7 +455,7 @@ cp [security.yml content] .github/workflows/security.yml
 # Repository Settings → Security → Advisories → Configure
 
 # 7. Add security contact to README
-echo "Security issues: tosin@example.com" >> README.md
+echo "Security issues: tosin.akinosho@gmail.com" >> README.md
 ```
 
 ### Security Review Checklist

@@ -53,7 +53,7 @@ description: >-
 
 # Authors (must be list, can include GitHub handles)
 authors:
-  - Tosin Akinosho <tosin@example.com> (@tosin2013)
+  - Tosin Akinosho <tosin.akinosho@gmail.com> (@tosin2013)
 
 # Licensing
 license_file: COPYING
@@ -250,7 +250,7 @@ readme: README.md
 description: >-
   Ansible collection for testing and auditing Model Context Protocol (MCP) servers.
 authors:
-  - Tosin Akinosho <tosin@example.com> (@tosin2013)
+  - Tosin Akinosho <tosin.akinosho@gmail.com> (@tosin2013)
 license_file: COPYING
 tags:
   - mcp

@@ -1,5 +1,5 @@
 <!--
-SPDX-FileCopyrightText: 2024 Tosin Akinosho <tosin@example.com>
+SPDX-FileCopyrightText: 2025 Tosin Akinosho <tosin.akinosho@gmail.com>
 SPDX-License-Identifier: GPL-3.0-or-later
 -->
 
@@ -528,14 +528,14 @@ This project is dual-licensed. See [ADR-0008: Licensing Strategy](docs/adrs/0008
 
 ```python
 # SPDX-License-Identifier: GPL-3.0-or-later
-# Copyright (c) 2024 Tosin Akinosho <tosin@example.com>
+# Copyright (c) 2025 Tosin Akinosho <tosin.akinosho@gmail.com>
 ```
 
 **Module Utils** (`plugins/module_utils/`): Dual-licensed
 
 ```python
 # SPDX-License-Identifier: GPL-3.0-or-later OR BSD-2-Clause
-# Copyright (c) 2024 Tosin Akinosho <tosin@example.com>
+# Copyright (c) 2025 Tosin Akinosho <tosin.akinosho@gmail.com>
 ```
 
 ### REUSE Compliance

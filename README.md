@@ -184,7 +184,7 @@ This collection is [REUSE compliant](https://reuse.software/).
 Security is a top priority. Please report security vulnerabilities privately:
 
 - **Preferred**: Use [GitHub Security Advisories](https://github.com/tosin2013/ansible-collection-mcp-audit/security/advisories/new)
-- **Email**: tosin@example.com (Subject: `[SECURITY] MCP Audit Collection`)
+- **Email**: tosin.akinosho@gmail.com (Subject: `[SECURITY] MCP Audit Collection`)
 
 See [SECURITY.md](SECURITY.md) for our complete security policy and response timelines.
 
