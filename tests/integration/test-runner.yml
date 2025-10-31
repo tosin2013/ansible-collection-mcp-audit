@@ -133,9 +133,8 @@
           - "  - mcp_test_tool: 5 + 3 = {{ tool_result.tool_result.content[0].text }} (Python server)"
           - "  - mcp_test_resource: Retrieved JSON config (Node.js server ✨)"
           - "  - mcp_test_prompt: Generated prompt messages (Python server)"
-          - >-
-            - mcp_test_suite: {{ suite_result.summary.passed }}/{{ suite_result.summary.total_tests }}
-              tests passed (Python server)
+          - "  - mcp_test_suite: {{ suite_result.summary.passed }}/{{ suite_result.summary.total_tests }}"
+          - "    tests passed (Python server)"
           - ""
           - "🎉 Python client successfully tested against both Python and TypeScript MCP servers!"
           - "================================================================"
