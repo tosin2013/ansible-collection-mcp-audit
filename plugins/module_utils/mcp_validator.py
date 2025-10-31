@@ -12,7 +12,9 @@ This module_utils can be used under either:
 Provides validation functions for MCP server responses.
 """
 
-from __future__ import annotations
+from __future__ import absolute_import, division, print_function
+
+__metaclass__ = type
 
 import json
 from typing import Any

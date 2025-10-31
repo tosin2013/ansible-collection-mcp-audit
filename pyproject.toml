@@ -71,8 +71,16 @@ ignore = [
     "UP010",  # Ansible requires __future__ imports for compatibility
     "UP001",  # Ansible requires __metaclass__ for Python 2/3 compatibility
 ]
+"plugins/module_utils/*.py" = [
+    "UP010",  # Ansible requires __future__ imports for compatibility
+    "UP001",  # Ansible requires __metaclass__ for Python 2/3 compatibility
+]
 "tests/*" = [
     "S101",   # Allow assert in tests
+    "UP010",  # Ansible requires __future__ imports for compatibility
+    "UP001",  # Ansible requires __metaclass__ for Python 2/3 compatibility
+    "E402",   # Module level import not at top (after __future__ and __metaclass__)
+    "I001",   # Import block formatting (after __future__ and __metaclass__)
 ]
 
 [tool.ruff.format]
