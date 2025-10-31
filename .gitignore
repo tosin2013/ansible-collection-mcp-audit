@@ -124,3 +124,4 @@ Thumbs.db
 
 # Test output
 tests/output/
+tests/integration/sample_servers/nodejs-resources/node_modules/
