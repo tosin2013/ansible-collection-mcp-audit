@@ -14,3 +14,7 @@ plugins/modules/mcp_test_resource.py pylint:broad-exception-caught
 plugins/modules/mcp_test_prompt.py pylint:broad-exception-caught
 plugins/modules/mcp_test_suite.py pylint:broad-exception-caught
 plugins/modules/mcp_test_llm_integration.py pylint:broad-exception-caught
+
+# Third-party sample MCP servers (not part of collection, used only for integration testing)
+tests/integration/sample_servers/prompts/server.py pylint:consider-using-from-import
+tests/integration/sample_servers/nodejs-resources/src/server.ts shebang
