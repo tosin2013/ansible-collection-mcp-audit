@@ -12,7 +12,7 @@
   register: simple_prompt
 
 - name: Verify simple prompt
-  assert:
+  ansible.builtin.assert:
     that:
       - simple_prompt.success
       - simple_prompt.messages is defined
@@ -31,7 +31,7 @@
   register: topic_prompt
 
 - name: Verify topic prompt
-  assert:
+  ansible.builtin.assert:
     that:
       - topic_prompt.success
       - topic_prompt.messages is defined
@@ -51,7 +51,7 @@
   register: full_prompt
 
 - name: Verify full prompt
-  assert:
+  ansible.builtin.assert:
     that:
       - full_prompt.success
       - full_prompt.messages is defined
@@ -69,13 +69,13 @@
   ignore_errors: true
 
 - name: Verify invalid prompt handling
-  assert:
+  ansible.builtin.assert:
     that:
       - invalid_prompt_result.failed
     fail_msg: "Invalid prompt should have failed"
 
 - name: Display test results
-  debug:
+  ansible.builtin.debug:
     msg:
       - "Simple prompt messages: {{ simple_prompt.messages | length }}"
       - "Topic prompt messages: {{ topic_prompt.messages | length }}"

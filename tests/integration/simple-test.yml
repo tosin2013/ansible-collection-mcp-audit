@@ -12,7 +12,7 @@
 
   tasks:
     - name: Display Python interpreter being used
-      debug:
+      ansible.builtin.debug:
         msg: "Using Python: {{ python_interpreter }}"
 
     - name: Test mcp_server_info with calculator server
@@ -25,5 +25,5 @@
       register: result
 
     - name: Display result
-      debug:
+      ansible.builtin.debug:
         var: result

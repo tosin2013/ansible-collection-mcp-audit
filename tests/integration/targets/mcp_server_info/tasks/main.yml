@@ -11,7 +11,7 @@
   register: calculator_info
 
 - name: Verify calculator server info
-  assert:
+  ansible.builtin.assert:
     that:
       - calculator_info is defined
       - calculator_info.server_name is defined
@@ -30,7 +30,7 @@
   register: prompt_info
 
 - name: Verify prompt server info
-  assert:
+  ansible.builtin.assert:
     that:
       - prompt_info is defined
       - prompt_info.server_name is defined
@@ -47,7 +47,7 @@
   register: resource_info
 
 - name: Verify resource server info
-  assert:
+  ansible.builtin.assert:
     that:
       - resource_info is defined
       - resource_info.server_name is defined
@@ -56,7 +56,7 @@
     fail_msg: "Resource server info validation failed"
 
 - name: Display test results
-  debug:
+  ansible.builtin.debug:
     msg:
       - "Calculator server: {{ calculator_info.server_name }} ({{ calculator_info.tool_count }} tools)"
       - "Prompt server: {{ prompt_info.server_name }} ({{ prompt_info.prompt_count }} prompts)"

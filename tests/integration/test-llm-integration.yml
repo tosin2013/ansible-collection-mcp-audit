@@ -28,7 +28,7 @@
       register: test1_result
 
     - name: Verify Test 1
-      assert:
+      ansible.builtin.assert:
         that:
           - test1_result.success
           - test1_result.tool_calls_made | length > 0
@@ -54,7 +54,7 @@
       register: test2_result
 
     - name: Verify Test 2
-      assert:
+      ansible.builtin.assert:
         that:
           - test2_result.success
           - test2_result.tool_calls_made | length > 0
@@ -77,7 +77,7 @@
       register: test3_result
 
     - name: Verify Test 3
-      assert:
+      ansible.builtin.assert:
         that:
           - test3_result.success
           - test3_result.final_answer is defined
@@ -85,7 +85,7 @@
         fail_msg: "✗ Test 3 failed"
 
     - name: Display Test Summary
-      debug:
+      ansible.builtin.debug:
         msg:
           - "==================== LLM Integration Test Summary ===================="
           - "✓ All 3 LLM integration tests passed!"

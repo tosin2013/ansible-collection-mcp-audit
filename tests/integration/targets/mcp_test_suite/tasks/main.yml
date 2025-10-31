@@ -27,7 +27,7 @@
   register: tool_suite
 
 - name: Verify tool suite results
-  assert:
+  ansible.builtin.assert:
     that:
       - tool_suite.success
       - tool_suite.summary is defined
@@ -50,7 +50,7 @@
   register: resource_suite
 
 - name: Verify resource suite results
-  assert:
+  ansible.builtin.assert:
     that:
       - resource_suite.success
       - resource_suite.summary is defined
@@ -74,7 +74,7 @@
   register: prompt_suite
 
 - name: Verify prompt suite results
-  assert:
+  ansible.builtin.assert:
     that:
       - prompt_suite.success
       - prompt_suite.summary is defined
@@ -104,7 +104,7 @@
   register: mixed_suite
 
 - name: Verify mixed suite results
-  assert:
+  ansible.builtin.assert:
     that:
       - mixed_suite.success
       - mixed_suite.summary is defined
@@ -112,7 +112,7 @@
     fail_msg: "Mixed suite test failed: {{ mixed_suite }}"
 
 - name: Display test suite results
-  debug:
+  ansible.builtin.debug:
     msg:
       - "Tool suite: {{ tool_suite.summary.passed }}/{{ tool_suite.summary.total_tests }} passed"
       - "Resource suite: {{ resource_suite.summary.passed }}/{{ resource_suite.summary.total_tests }} passed"

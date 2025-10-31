@@ -22,5 +22,5 @@
       register: tool_result
 
     - name: Display full result structure
-      debug:
+      ansible.builtin.debug:
         var: tool_result

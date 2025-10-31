@@ -24,5 +24,5 @@
       ignore_errors: true
 
     - name: Display full result
-      debug:
+      ansible.builtin.debug:
         var: result

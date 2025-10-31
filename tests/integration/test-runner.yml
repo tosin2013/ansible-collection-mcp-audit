@@ -22,7 +22,7 @@
       register: server_info_result
 
     - name: Verify server info result
-      assert:
+      ansible.builtin.assert:
         that:
           - server_info_result is defined
           - server_info_result.server_info is defined
@@ -45,7 +45,7 @@
       register: tool_result
 
     - name: Verify tool result
-      assert:
+      ansible.builtin.assert:
         that:
           - tool_result.success
           - tool_result.tool_result.content[0].text == "8"
@@ -62,7 +62,7 @@
       register: resource_result
 
     - name: Verify resource result
-      assert:
+      ansible.builtin.assert:
         that:
           - resource_result.success
           - resource_result.resource_content is defined
@@ -82,7 +82,7 @@
       register: prompt_result
 
     - name: Verify prompt result
-      assert:
+      ansible.builtin.assert:
         that:
           - prompt_result.success
           - prompt_result.prompt_result is defined
@@ -113,7 +113,7 @@
       register: suite_result
 
     - name: Verify suite result
-      assert:
+      ansible.builtin.assert:
         that:
           - suite_result.success
           - suite_result.summary.total_tests == 2
@@ -122,7 +122,7 @@
         fail_msg: "✗ mcp_test_suite test failed"
 
     - name: Display summary
-      debug:
+      ansible.builtin.debug:
         msg:
           - "==================== Integration Test Summary ===================="
           - "✓ All 5 modules tested successfully!"
@@ -133,7 +133,9 @@
           - "  - mcp_test_tool: 5 + 3 = {{ tool_result.tool_result.content[0].text }} (Python server)"
           - "  - mcp_test_resource: Retrieved JSON config (Node.js server ✨)"
           - "  - mcp_test_prompt: Generated prompt messages (Python server)"
-          - "  - mcp_test_suite: {{ suite_result.summary.passed }}/{{ suite_result.summary.total_tests }} tests passed (Python server)"
+          - >-
+            - mcp_test_suite: {{ suite_result.summary.passed }}/{{ suite_result.summary.total_tests }}
+              tests passed (Python server)
           - ""
           - "🎉 Python client successfully tested against both Python and TypeScript MCP servers!"
           - "================================================================"

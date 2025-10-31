@@ -18,5 +18,5 @@
       register: prompt_result
 
     - name: Display full result structure
-      debug:
+      ansible.builtin.debug:
         var: prompt_result

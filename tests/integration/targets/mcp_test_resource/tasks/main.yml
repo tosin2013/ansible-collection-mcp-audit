@@ -12,7 +12,7 @@
   register: json_resource
 
 - name: Verify JSON resource
-  assert:
+  ansible.builtin.assert:
     that:
       - json_resource.success
       - json_resource.content is defined
@@ -29,7 +29,7 @@
   register: text_resource
 
 - name: Verify text resource
-  assert:
+  ansible.builtin.assert:
     that:
       - text_resource.success
       - text_resource.content is defined
@@ -46,7 +46,7 @@
   register: yaml_resource
 
 - name: Verify YAML resource
-  assert:
+  ansible.builtin.assert:
     that:
       - yaml_resource.success
       - yaml_resource.content is defined
@@ -63,7 +63,7 @@
   register: expected_content_test
 
 - name: Verify expected content validation
-  assert:
+  ansible.builtin.assert:
     that:
       - expected_content_test.success
       - expected_content_test.validation.passed
@@ -80,13 +80,13 @@
   ignore_errors: true
 
 - name: Verify invalid resource handling
-  assert:
+  ansible.builtin.assert:
     that:
       - invalid_resource_result.failed
     fail_msg: "Invalid resource should have failed"
 
 - name: Display test results
-  debug:
+  ansible.builtin.debug:
     msg:
       - "JSON resource: {{ json_resource.content[:50] }}..."
       - "Text resource: {{ text_resource.content[:50] }}..."

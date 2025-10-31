@@ -15,7 +15,7 @@
   register: add_result
 
 - name: Verify add result
-  assert:
+  ansible.builtin.assert:
     that:
       - add_result.success
       - add_result.result is defined
@@ -35,7 +35,7 @@
   register: product_result
 
 - name: Verify product result
-  assert:
+  ansible.builtin.assert:
     that:
       - product_result.success
       - product_result.result is defined
@@ -53,7 +53,7 @@
   register: server_info_result
 
 - name: Verify server info result
-  assert:
+  ansible.builtin.assert:
     that:
       - server_info_result.success
       - server_info_result.result is defined
@@ -73,7 +73,7 @@
   register: expected_result_test
 
 - name: Verify expected result validation
-  assert:
+  ansible.builtin.assert:
     that:
       - expected_result_test.success
       - expected_result_test.validation.passed
@@ -91,13 +91,13 @@
   ignore_errors: true
 
 - name: Verify invalid tool handling
-  assert:
+  ansible.builtin.assert:
     that:
       - invalid_tool_result.failed
     fail_msg: "Invalid tool should have failed"
 
 - name: Display test results
-  debug:
+  ansible.builtin.debug:
     msg:
       - "Add: 5 + 3 = {{ add_result.result }}"
       - "Product: 4 * 7 = {{ product_result.result }}"
