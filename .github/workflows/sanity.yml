@@ -13,17 +13,32 @@ on:
 
 jobs:
   sanity:
-    name: Sanity (Py${{ matrix.python }} + ansible-core ${{ matrix.ansible }})
+    name: Sanity (Py${{ matrix.python-version }} + ansible-core ${{ matrix.ansible-version }})
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        python-version: ['3.9', '3.11', '3.13']
-        ansible-version: ['2.15', '2.16', '2.17']
-        # Test matrix: 8 combinations (3 Python × 3 ansible-core - 1 exclusion)
-        exclude:
-          # ansible-core 2.17 requires Python >=3.10
+        # Test matrix: 7 valid combinations (explicit include to avoid incompatible versions)
+        # ansible-core 2.16+ requires Python >=3.10
+        include:
+          # Python 3.9 - only ansible-core 2.15 (2.16+ require Python >=3.10)
           - python-version: '3.9'
+            ansible-version: '2.15'
+
+          # Python 3.11 - all ansible-core versions
+          - python-version: '3.11'
+            ansible-version: '2.15'
+          - python-version: '3.11'
+            ansible-version: '2.16'
+          - python-version: '3.11'
+            ansible-version: '2.17'
+
+          # Python 3.13 - all ansible-core versions
+          - python-version: '3.13'
+            ansible-version: '2.15'
+          - python-version: '3.13'
+            ansible-version: '2.16'
+          - python-version: '3.13'
             ansible-version: '2.17'
 
     steps:
