@@ -6,6 +6,8 @@
 # License: MIT (assumed)
 # Modifications: Simplified for stdio-only integration testing
 
+from __future__ import annotations
+
 import mcp.server.stdio
 import mcp.types as types
 from mcp.server import NotificationOptions, Server

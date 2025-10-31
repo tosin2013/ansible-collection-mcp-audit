@@ -13,6 +13,8 @@ Provides a unified interface for communicating with MCP servers
 across different transport protocols (stdio, SSE, HTTP).
 """
 
+from __future__ import annotations
+
 from contextlib import asynccontextmanager
 from typing import Any, ClassVar, Optional
 

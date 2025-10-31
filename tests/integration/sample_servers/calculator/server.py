@@ -6,6 +6,8 @@
 # License: Educational/demonstration purposes
 # Modifications: Minimal adaptations for integration testing
 
+from __future__ import annotations
+
 import asyncio
 
 from mcp.server import Server

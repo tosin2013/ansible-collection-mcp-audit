@@ -12,6 +12,8 @@ This module_utils can be used under either:
 Provides reporting functions for MCP test results in JSON and YAML formats.
 """
 
+from __future__ import annotations
+
 import json
 from datetime import datetime
 from typing import Any, Optional

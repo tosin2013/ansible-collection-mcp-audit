@@ -12,6 +12,8 @@ This module_utils can be used under either:
 Provides validation functions for MCP server responses.
 """
 
+from __future__ import annotations
+
 import json
 from typing import Any, Optional
 
