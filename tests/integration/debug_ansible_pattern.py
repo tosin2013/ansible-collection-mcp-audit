@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Debug script to test MCP connection using Ansible pattern"""
 
 import asyncio

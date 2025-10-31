@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Test Node.js resource server with Python client - Cross-language compatibility test"""
 
 import asyncio

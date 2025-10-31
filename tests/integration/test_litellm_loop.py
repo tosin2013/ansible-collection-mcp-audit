@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 Test to debug the litellm tool calling loop issue
 """

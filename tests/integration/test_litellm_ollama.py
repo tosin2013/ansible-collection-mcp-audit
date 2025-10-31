@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 Quick test to validate litellm works with local Ollama
 """
