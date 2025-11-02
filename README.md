@@ -1,10 +1,11 @@
-# Ansible Collection - mcp.audit
+# Ansible Collection - tosin2013.mcp_audit
 
 [![Code Quality](https://github.com/tosin2013/ansible-collection-mcp-audit/actions/workflows/quality.yml/badge.svg)](https://github.com/tosin2013/ansible-collection-mcp-audit/actions/workflows/quality.yml)
 [![Ansible Sanity](https://github.com/tosin2013/ansible-collection-mcp-audit/actions/workflows/sanity.yml/badge.svg)](https://github.com/tosin2013/ansible-collection-mcp-audit/actions/workflows/sanity.yml)
 [![Security](https://github.com/tosin2013/ansible-collection-mcp-audit/actions/workflows/security.yml/badge.svg)](https://github.com/tosin2013/ansible-collection-mcp-audit/actions/workflows/security.yml)
 [![License](https://img.shields.io/badge/License-GPL%203.0%20or%20later-blue.svg)](COPYING)
 [![REUSE status](https://api.reuse.software/badge/github.com/tosin2013/ansible-collection-mcp-audit)](https://api.reuse.software/info/github.com/tosin2013/ansible-collection-mcp-audit)
+[![Galaxy](https://img.shields.io/badge/galaxy-tosin2013.mcp__audit-blue.svg)](https://galaxy.ansible.com/ui/repo/published/tosin2013/mcp_audit/)
 
 Ansible collection for testing and auditing [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) servers. Provides comprehensive modules to verify MCP server implementations, test tools, resources, and prompts with detailed reporting capabilities.
 
@@ -25,10 +26,10 @@ Ansible collection for testing and auditing [Model Context Protocol (MCP)](https
 ### From Ansible Galaxy
 
 ```bash
-ansible-galaxy collection install mcp.audit
+ansible-galaxy collection install tosin2013.mcp_audit
 ```
 
-The collection is automatically published to [Ansible Galaxy](https://galaxy.ansible.com/ui/repo/published/mcp/audit/) when a version tag (e.g., `v1.1.0`) is pushed to the repository after all CI tests pass
+The collection is automatically published to [Ansible Galaxy](https://galaxy.ansible.com/ui/repo/published/tosin2013/mcp_audit/) when a version tag (e.g., `v1.1.0`) is pushed to the repository after all CI tests pass
 
 See [docs/GALAXY-PUBLISHING.md](docs/GALAXY-PUBLISHING.md) for details on the publishing workflow.
 
@@ -67,7 +68,7 @@ ansible-galaxy collection install mcp-audit-*.tar.gz
   gather_facts: false
   tasks:
     - name: Get server information
-      mcp.audit.mcp_server_info:
+      tosin2013.mcp_audit.mcp_server_info:
         transport: stdio
         server_command: python -m mcp_server_example
       register: server_info
@@ -81,7 +82,7 @@ ansible-galaxy collection install mcp-audit-*.tar.gz
 
 ```yaml
 - name: Test calculator add tool
-  mcp.audit.mcp_test_tool:
+  tosin2013.mcp_audit.mcp_test_tool:
     transport: stdio
     server_command: python -m calculator_mcp_server
     tool_name: add
@@ -120,13 +121,14 @@ ansible-galaxy collection install mcp-audit-*.tar.gz
 
 ## Documentation
 
-- **[Installation Guide](docs/installation.md)** (Coming Soon)
 - **[Galaxy Publishing Guide](docs/GALAXY-PUBLISHING.md)** - How to publish to Ansible Galaxy
-- **[Module Documentation](docs/modules/)** (Coming Soon)
-- **[Examples](docs/examples/)** (Coming Soon)
-- **[Architectural Decision Records](docs/adrs/README.md)**
-- **[Security Policy](SECURITY.md)** (Coming Soon)
-- **[Contributing Guidelines](CONTRIBUTING.md)** (Coming Soon)
+- **[Implementation Plan](docs/IMPLEMENTATION-PLAN.md)** - Complete development roadmap
+- **[Architectural Decision Records](docs/adrs/README.md)** - All ADRs and design decisions
+- **[Security Policy](SECURITY.md)** - Security reporting and vulnerability policy
+- **[Contributing Guidelines](CONTRIBUTING.md)** - How to contribute to the project
+- **[AI Agent Guidelines](AGENTS.md)** - Coding best practices for AI agents
+- **[Module Documentation](docs/modules/)** - _Coming in v1.1.0_
+- **[Examples & Tutorials](docs/examples/)** - _Coming in v1.1.0_
 
 ## Development
 
@@ -167,7 +169,7 @@ ansible-test sanity --docker
 
 This collection follows Ansible best practices and is built on solid architectural decisions:
 
-- **[ADR-0001](docs/adrs/0001-collection-namespace-selection.md)**: Collection namespace (`mcp.audit`)
+- **[ADR-0001](docs/adrs/0001-collection-namespace-selection.md)**: Collection namespace selection (currently `tosin2013.mcp_audit`)
 - **[ADR-0002](docs/adrs/0002-mcp-python-sdk-selection.md)**: MCP Python SDK selection
 - **[ADR-0003](docs/adrs/0003-module-architecture-pattern.md)**: Module architecture pattern
 - **[ADR-0008](docs/adrs/0008-licensing-strategy.md)**: Licensing strategy (GPL-3.0-or-later)
@@ -218,8 +220,8 @@ Contributions are welcome! Please see our [Contributing Guidelines](CONTRIBUTING
 - ✅ Module utilities development (Phase 2) - **COMPLETE**
 - ✅ Core modules implementation (Phase 3) - **COMPLETE**
 - ✅ Integration testing (Phase 4) - **COMPLETE**
+- ✅ Galaxy publication (Phase 6) - **COMPLETE** ([Published v1.0.0](https://galaxy.ansible.com/ui/repo/published/tosin2013/mcp_audit/))
 - 🚧 Documentation and examples (Phase 5) - **IN PROGRESS**
-- 🚧 Galaxy publication (Phase 6) - **IN PROGRESS** (Automated workflow ready)
 
 ### Version 1.1.0 (Released: 2025-10-30)
 
@@ -228,7 +230,7 @@ Contributions are welcome! Please see our [Contributing Guidelines](CONTRIBUTING
 - ✅ Multi-provider support (Ollama, OpenRouter, vLLM, 100+ providers)
 - ✅ Secure credential management with Ansible Vault
 
-**Current Status**: 90% complete, Galaxy publishing workflow ready
+**Current Status**: ✅ v1.0.0 Published to Galaxy | 95% complete (Documentation in progress)
 
 See [IMPLEMENTATION-PLAN.md](docs/IMPLEMENTATION-PLAN.md) for the complete roadmap.
 
@@ -241,12 +243,13 @@ See [IMPLEMENTATION-PLAN.md](docs/IMPLEMENTATION-PLAN.md) for the complete roadm
 ## Links
 
 - **Repository**: https://github.com/tosin2013/ansible-collection-mcp-audit
-- **Ansible Galaxy**: https://galaxy.ansible.com/mcp/audit (coming soon)
+- **Ansible Galaxy**: https://galaxy.ansible.com/ui/repo/published/tosin2013/mcp_audit/
 - **Model Context Protocol**: https://modelcontextprotocol.io/
 - **MCP Python SDK**: https://github.com/modelcontextprotocol/python-sdk
 
 ---
 
-**Status**: 🚀 Ready for Galaxy Publication (90% Complete)
+**Status**: ✅ Published to Ansible Galaxy
 **Version**: 1.0.0
+**Galaxy**: [tosin2013.mcp_audit](https://galaxy.ansible.com/ui/repo/published/tosin2013/mcp_audit/)
 **Last Updated**: 2025-11-02
