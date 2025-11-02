@@ -3,8 +3,8 @@
 # See https://docs.ansible.com/ansible/latest/dev_guide/developing_collections_distributing.html
 # for full specification
 
-namespace: mcp
-name: audit
+namespace: tosin2013
+name: mcp_audit
 version: 1.0.0
 
 readme: README.md
