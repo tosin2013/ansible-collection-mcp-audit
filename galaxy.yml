@@ -5,7 +5,7 @@
 
 namespace: tosin2013
 name: mcp_audit
-version: 1.0.0
+version: 1.0.1
 
 readme: README.md
 
@@ -65,5 +65,4 @@ build_ignore:
   - pyproject.toml
   - PRD.md
   - REUSE.toml
-  - docs/IMPLEMENTATION-PLAN.md
   - docs/context
