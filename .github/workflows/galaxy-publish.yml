@@ -1,5 +1,5 @@
 # Ansible Galaxy Publishing Workflow
-# Automatically publishes collection to Ansible Galaxy after successful CI builds
+# Automatically publishes collection to Ansible Galaxy on version tag pushes
 # See ADR-0012 for CI/CD strategy
 
 ---
@@ -7,70 +7,22 @@ name: Publish to Ansible Galaxy
 
 on:
   push:
-    branches:
-      - main
     tags:
       - 'v*'
   workflow_dispatch:
     inputs:
-      force_publish:
-        description: 'Force publish even if version exists'
-        required: false
-        default: 'false'
+      version:
+        description: 'Version to publish (e.g., 1.0.0)'
+        required: true
+        type: string
+
+permissions:
+  contents: write  # For creating GitHub releases
+  actions: read    # For checking workflow status
 
 jobs:
-  # First, ensure all tests pass
-  check-tests:
-    name: Check Test Results
-    runs-on: ubuntu-latest
-    outputs:
-      should_publish: ${{ steps.check.outputs.should_publish }}
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v5
-
-      - name: Check if dependabot PR
-        id: dependabot
-        run: |
-          if [[ "${{ github.event.head_commit.author.name }}" == "dependabot[bot]" ]]; then
-            echo "is_dependabot=true" >> $GITHUB_OUTPUT
-          else
-            echo "is_dependabot=false" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Wait for required checks
-        uses: lewagon/wait-on-check-action@v1.3.4
-        with:
-          ref: ${{ github.sha }}
-          check-regexp: '(Code Quality|Ansible Sanity Tests)'
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-          wait-interval: 30
-
-      - name: Determine if should publish
-        id: check
-        run: |
-          # Publish if:
-          # 1. Manual dispatch with force_publish
-          # 2. Tag push (version release)
-          # 3. Dependabot PR that passed all checks
-          if [[ "${{ github.event_name }}" == "workflow_dispatch" && "${{ github.event.inputs.force_publish }}" == "true" ]]; then
-            echo "should_publish=true" >> $GITHUB_OUTPUT
-            echo "Publishing: Manual dispatch with force"
-          elif [[ "${{ github.ref_type }}" == "tag" ]]; then
-            echo "should_publish=true" >> $GITHUB_OUTPUT
-            echo "Publishing: Tag release"
-          elif [[ "${{ steps.dependabot.outputs.is_dependabot }}" == "true" ]]; then
-            echo "should_publish=true" >> $GITHUB_OUTPUT
-            echo "Publishing: Dependabot update"
-          else
-            echo "should_publish=false" >> $GITHUB_OUTPUT
-            echo "Skipping: Regular commit (only publish on tags or dependabot updates)"
-          fi
-
   build:
     name: Build Collection
-    needs: check-tests
-    if: needs.check-tests.outputs.should_publish == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code

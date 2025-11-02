@@ -28,10 +28,7 @@ Ansible collection for testing and auditing [Model Context Protocol (MCP)](https
 ansible-galaxy collection install mcp.audit
 ```
 
-The collection is automatically published to [Ansible Galaxy](https://galaxy.ansible.com/ui/repo/published/mcp/audit/) when:
-- A new version tag (e.g., `v1.1.0`) is pushed
-- All CI tests pass successfully
-- Dependabot updates are merged
+The collection is automatically published to [Ansible Galaxy](https://galaxy.ansible.com/ui/repo/published/mcp/audit/) when a version tag (e.g., `v1.1.0`) is pushed to the repository after all CI tests pass
 
 See [docs/GALAXY-PUBLISHING.md](docs/GALAXY-PUBLISHING.md) for details on the publishing workflow.
 

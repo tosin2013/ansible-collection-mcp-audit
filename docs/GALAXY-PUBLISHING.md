@@ -36,28 +36,30 @@ This document explains how to publish the `mcp.audit` collection to Ansible Gala
 
 ### Automatic Publishing
 
-The collection is automatically published to Ansible Galaxy when:
+The collection is automatically published to Ansible Galaxy when you push a version tag:
 
-1. **Version Tag Push**
-   ```bash
-   # Bump version in galaxy.yml first
-   git add galaxy.yml
-   git commit -m "chore: bump version to 1.1.0"
-   git tag v1.1.0
-   git push origin main --tags
-   ```
+**Version Tag Push** (Recommended)
+```bash
+# Use the version bump helper script
+./scripts/bump-version.sh minor --commit --tag
+git push origin main --tags
 
-2. **Dependabot Updates**
-   - When dependabot creates a PR with dependency updates
-   - After the PR is merged and all CI tests pass
-   - The collection is automatically published
+# Or manually:
+# 1. Update version in galaxy.yml and pyproject.toml
+# 2. Commit the changes
+# 3. Create and push a tag
+git add galaxy.yml pyproject.toml
+git commit -m "chore: bump version to 1.1.0"
+git tag v1.1.0
+git push origin main --tags
+```
 
-3. **Manual Trigger**
-   ```
-   Go to Actions → Publish to Ansible Galaxy → Run workflow
-   Select branch: main
-   Enable "Force publish" if needed
-   ```
+**Manual Trigger**
+```
+Go to Actions → Publish to Ansible Galaxy → Run workflow
+Enter version: 1.0.0
+Click "Run workflow"
+```
 
 ### Manual Publishing
 
@@ -93,19 +95,25 @@ This collection follows [Semantic Versioning](https://semver.org/):
    antsibull-changelog release --version 1.1.0
    ```
 
-3. **Commit and tag**
+3. **Commit and tag** (after ensuring all tests pass)
    ```bash
-   git add galaxy.yml changelogs/
+   # Use the helper script (recommended)
+   ./scripts/bump-version.sh minor --commit --tag
+   git push origin main --tags
+
+   # Or manually
+   git add galaxy.yml pyproject.toml changelogs/
    git commit -m "chore: bump version to 1.1.0"
    git tag v1.1.0
    git push origin main --tags
    ```
 
 4. **GitHub Actions will automatically**
-   - Run all CI tests
    - Build the collection
    - Publish to Galaxy
    - Create a GitHub release with artifacts
+
+**Important**: Ensure all CI tests pass on the main branch before creating a version tag!
 
 ## Publishing Checklist
 
