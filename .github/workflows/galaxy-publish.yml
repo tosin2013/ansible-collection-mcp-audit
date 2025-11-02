@@ -28,6 +28,43 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v5
 
+      - name: Validate version consistency
+        run: |
+          # Extract version from git tag (e.g., v1.0.1 -> 1.0.1)
+          if [[ "${{ github.ref }}" =~ ^refs/tags/v(.+)$ ]]; then
+            TAG_VERSION="${BASH_REMATCH[1]}"
+          elif [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            TAG_VERSION="${{ github.event.inputs.version }}"
+          else
+            echo "❌ ERROR: Unable to determine version from tag or input"
+            exit 1
+          fi
+
+          # Extract version from galaxy.yml
+          GALAXY_VERSION=$(grep '^version:' galaxy.yml | awk '{print $2}' | tr -d '"' | tr -d "'")
+
+          # Compare versions
+          echo "🏷️  Git tag version: $TAG_VERSION"
+          echo "📦 galaxy.yml version: $GALAXY_VERSION"
+
+          if [[ "$TAG_VERSION" != "$GALAXY_VERSION" ]]; then
+            echo ""
+            echo "❌ ERROR: Version mismatch detected!"
+            echo ""
+            echo "The git tag version ($TAG_VERSION) does not match the galaxy.yml version ($GALAXY_VERSION)"
+            echo ""
+            echo "To fix this issue:"
+            echo "1. Update the version in galaxy.yml to match the tag: $TAG_VERSION"
+            echo "2. Commit the change: git add galaxy.yml && git commit -m 'chore: Bump version to $TAG_VERSION'"
+            echo "3. Delete the existing tag: git tag -d v$TAG_VERSION && git push origin :refs/tags/v$TAG_VERSION"
+            echo "4. Push the commit: git push"
+            echo "5. Re-create the tag: git tag -a v$TAG_VERSION -m 'Release v$TAG_VERSION' && git push origin v$TAG_VERSION"
+            echo ""
+            exit 1
+          fi
+
+          echo "✅ Version validation passed: $TAG_VERSION"
+
       - name: Set up Python 3.11
         uses: actions/setup-python@v6
         with:
