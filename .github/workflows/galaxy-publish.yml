@@ -46,7 +46,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: collection
-          path: mcp-audit-*.tar.gz
+          path: "*.tar.gz"
           retention-days: 30
 
   publish:
@@ -55,7 +55,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: ansible-galaxy
-      url: https://galaxy.ansible.com/ui/repo/published/mcp/audit/
+      url: https://galaxy.ansible.com/ui/repo/published/tosin2013/mcp_audit/
     steps:
       - name: Download collection artifact
         uses: actions/download-artifact@v4
@@ -76,13 +76,13 @@ jobs:
         env:
           ANSIBLE_GALAXY_API_KEY: ${{ secrets.ANSIBLE_GALAXY_API_KEY }}
         run: |
-          ansible-galaxy collection publish mcp-audit-*.tar.gz --api-key="$ANSIBLE_GALAXY_API_KEY"
+          ansible-galaxy collection publish *.tar.gz --api-key="$ANSIBLE_GALAXY_API_KEY"
 
       - name: Create GitHub Release
         if: github.ref_type == 'tag'
         uses: softprops/action-gh-release@v2
         with:
-          files: mcp-audit-*.tar.gz
+          files: "*.tar.gz"
           generate_release_notes: true
           draft: false
           prerelease: false
