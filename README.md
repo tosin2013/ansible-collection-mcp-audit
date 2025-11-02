@@ -122,7 +122,6 @@ ansible-galaxy collection install mcp-audit-*.tar.gz
 ## Documentation
 
 - **[Galaxy Publishing Guide](docs/GALAXY-PUBLISHING.md)** - How to publish to Ansible Galaxy
-- **[Implementation Plan](docs/IMPLEMENTATION-PLAN.md)** - Complete development roadmap
 - **[Architectural Decision Records](docs/adrs/README.md)** - All ADRs and design decisions
 - **[Security Policy](SECURITY.md)** - Security reporting and vulnerability policy
 - **[Contributing Guidelines](CONTRIBUTING.md)** - How to contribute to the project
@@ -231,8 +230,6 @@ Contributions are welcome! Please see our [Contributing Guidelines](CONTRIBUTING
 - ✅ Secure credential management with Ansible Vault
 
 **Current Status**: ✅ v1.0.0 Published to Galaxy | 95% complete (Documentation in progress)
-
-See [IMPLEMENTATION-PLAN.md](docs/IMPLEMENTATION-PLAN.md) for the complete roadmap.
 
 ## Credits
 
