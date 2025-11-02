@@ -17,6 +17,8 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
+import asyncio
+import gc
 from contextlib import asynccontextmanager
 from typing import Any, ClassVar
 
@@ -107,6 +109,11 @@ class MCPClient:
         self._read_stream = None
         self._write_stream = None
 
+        # State for persistent connections (Phase 2)
+        self._persistent = False
+        self._stdio_context = None
+        self._session_context = None
+
         # Validate transport-specific parameters
         if transport == "stdio":
             if not server_command:
@@ -164,11 +171,148 @@ class MCPClient:
                 # Note: Implementation may vary based on MCP SDK version
                 raise MCPTransportError("HTTP transport implementation pending - use stdio or sse for now")
         except Exception as e:
-            raise MCPConnectionError(f"Failed to connect to MCP server via {self.transport}: {e!s}") from e
+            error_msg = str(e)
+            # Check for TaskGroup-related errors which indicate process cleanup issues
+            if "TaskGroup" in error_msg or "unhandled errors" in error_msg:
+                raise MCPConnectionError(
+                    f"Failed to connect to MCP server via {self.transport}: {error_msg}\n"
+                    "This may be caused by a previous connection not being fully cleaned up. "
+                    "Consider adding a delay between sequential MCP operations."
+                ) from e
+            raise MCPConnectionError(f"Failed to connect to MCP server via {self.transport}: {error_msg}") from e
         finally:
+            # Cleanup session and streams
             self.session = None
             self._read_stream = None
             self._write_stream = None
+
+            # Add small delay to allow process cleanup, especially for stdio transport
+            # This helps prevent race conditions when modules run sequentially
+            if self.transport == "stdio":
+                await asyncio.sleep(0.1)
+                # Force garbage collection to clean up any lingering process handles
+                gc.collect()
+
+    async def connect_persistent(self) -> "MCPClient":
+        """
+        Establish a persistent connection to the MCP server (Phase 2).
+
+        Unlike connect(), this method does not use a context manager and maintains
+        the connection until explicitly closed with close(). Intended for use with
+        the MCPConnectionManager for connection pooling.
+
+        Returns:
+            Self (connected MCPClient instance)
+
+        Raises:
+            MCPConnectionError: If connection fails
+            MCPClientError: If already connected
+
+        Example:
+            client = MCPClient(transport="stdio", server_command="python", ...)
+            await client.connect_persistent()
+            result = await client.call_tool("my_tool", {})
+            await client.close()
+        """
+        if self._persistent:
+            raise MCPClientError("Client is already persistently connected. Call close() first.")
+
+        try:
+            if self.transport == "stdio":
+                server_params = StdioServerParameters(
+                    command=self.server_command,
+                    args=self.server_args,
+                )
+                # Store context managers without entering them as context managers
+                self._stdio_context = stdio_client(server_params)
+                read, write = await self._stdio_context.__aenter__()
+                self._read_stream = read
+                self._write_stream = write
+
+                self._session_context = ClientSession(read, write)
+                self.session = await self._session_context.__aenter__()
+                await self.session.initialize()
+
+                self._persistent = True
+                return self
+
+            elif self.transport == "sse":
+                # Store context managers for SSE transport
+                from mcp.client.sse import sse_client
+
+                self._stdio_context = sse_client(self.server_url, self.server_headers)
+                read, write = await self._stdio_context.__aenter__()
+                self._read_stream = read
+                self._write_stream = write
+
+                self._session_context = ClientSession(read, write)
+                self.session = await self._session_context.__aenter__()
+                await self.session.initialize()
+
+                self._persistent = True
+                return self
+
+            elif self.transport == "http":
+                raise MCPTransportError("HTTP transport implementation pending - use stdio or sse for now")
+
+        except Exception as e:
+            # Cleanup on error
+            await self._cleanup_persistent()
+            raise MCPConnectionError(f"Failed to create persistent connection via {self.transport}: {e!s}") from e
+
+    async def close(self) -> None:
+        """
+        Close a persistent connection (Phase 2).
+
+        Properly closes all resources associated with a persistent connection
+        created by connect_persistent(). Safe to call multiple times.
+
+        Raises:
+            MCPClientError: If connection cleanup fails
+        """
+        if not self._persistent:
+            # Not a persistent connection, nothing to do
+            return
+
+        try:
+            await self._cleanup_persistent()
+        except Exception as e:
+            raise MCPClientError(f"Error during connection cleanup: {e!s}") from e
+        finally:
+            # Add cleanup delay for stdio transport
+            if self.transport == "stdio":
+                await asyncio.sleep(0.1)
+                gc.collect()
+
+    async def _cleanup_persistent(self) -> None:
+        """
+        Internal method to cleanup persistent connection resources.
+
+        This method is called by close() and also in error recovery paths.
+        """
+        # Close session context
+        if self._session_context:
+            try:
+                await self._session_context.__aexit__(None, None, None)
+            except Exception:
+                # Ignore errors during cleanup
+                pass
+            self._session_context = None
+            self.session = None
+
+        # Close stdio/sse context
+        if self._stdio_context:
+            try:
+                await self._stdio_context.__aexit__(None, None, None)
+            except Exception:
+                # Ignore errors during cleanup
+                pass
+            self._stdio_context = None
+
+        # Clear streams
+        self._read_stream = None
+        self._write_stream = None
+        self._persistent = False
 
     async def list_tools(self) -> list[Tool]:
         """

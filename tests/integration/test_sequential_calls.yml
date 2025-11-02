@@ -1,0 +1,93 @@
+---
+# Test playbook for sequential MCP module calls
+# This tests the Phase 1 fixes for connection reuse issues
+#
+# Before Phase 1 fixes: Second call would fail with TaskGroup error
+# After Phase 1 fixes: All calls should succeed with retry logic and cleanup delays
+
+- name: Test sequential MCP module calls with connection retry fixes
+  hosts: localhost
+  gather_facts: false
+
+  vars:
+    # Use a simple calculator server for testing
+    # You can replace this with any MCP server you have available
+    mcp_server_command: "python"
+    mcp_server_args:
+      - "-m"
+      - "calculator_server"
+
+  tasks:
+    - name: Test 1 - Get server info (first call)
+      tosin2013.mcp_audit.mcp_server_info:
+        transport: stdio
+        server_command: "{{ mcp_server_command }}"
+        server_args: "{{ mcp_server_args }}"
+        timeout: 30
+      register: server_info_1
+
+    - name: Display first server info result
+      ansible.builtin.debug:
+        msg: "Server 1: {{ server_info_1.server_info.server_name }}"
+      when: server_info_1.success
+
+    - name: Test 2 - Get server info again (second call - this would fail before Phase 1 fixes)
+      tosin2013.mcp_audit.mcp_server_info:
+        transport: stdio
+        server_command: "{{ mcp_server_command }}"
+        server_args: "{{ mcp_server_args }}"
+        timeout: 30
+      register: server_info_2
+
+    - name: Display second server info result
+      ansible.builtin.debug:
+        msg: "Server 2: {{ server_info_2.server_info.server_name }}"
+      when: server_info_2.success
+
+    - name: Test 3 - Test a tool (third call)
+      tosin2013.mcp_audit.mcp_test_tool:
+        tool_name: add
+        tool_arguments:
+          a: 5
+          b: 3
+        expected_result: 8
+        transport: stdio
+        server_command: "{{ mcp_server_command }}"
+        server_args: "{{ mcp_server_args }}"
+        timeout: 30
+      register: tool_result
+
+    - name: Display tool test result
+      ansible.builtin.debug:
+        msg: "Tool test passed: {{ tool_result.test_passed }}"
+      when: tool_result.success
+
+    - name: Test 4 - Test another tool (fourth call)
+      tosin2013.mcp_audit.mcp_test_tool:
+        tool_name: multiply
+        tool_arguments:
+          a: 6
+          b: 7
+        expected_result: 42
+        transport: stdio
+        server_command: "{{ mcp_server_command }}"
+        server_args: "{{ mcp_server_args }}"
+        timeout: 30
+      register: tool_result_2
+
+    - name: Display second tool test result
+      ansible.builtin.debug:
+        msg: "Tool test 2 passed: {{ tool_result_2.test_passed }}"
+      when: tool_result_2.success
+
+    - name: Verify all tests passed
+      ansible.builtin.assert:
+        that:
+          - server_info_1.success
+          - server_info_2.success
+          - tool_result.success
+          - tool_result.test_passed
+          - tool_result_2.success
+          - tool_result_2.test_passed
+        fail_msg: "One or more sequential tests failed"
+        success_msg: "All sequential tests passed - Phase 1 fixes are working!"

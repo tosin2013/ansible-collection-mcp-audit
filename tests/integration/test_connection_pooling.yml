@@ -1,0 +1,230 @@
+---
+# Test playbook for Phase 2 connection pooling and reuse
+# This demonstrates the connection pooling feature with sequential module calls
+#
+# Phase 2 Features Tested:
+# - Connection reuse across multiple tasks
+# - Connection pooling with MCPConnectionManager
+# - Comparison with/without connection pooling
+# - Performance improvements
+
+- name: Test Phase 2 Connection Pooling and Reuse
+  hosts: localhost
+  gather_facts: false
+
+  vars:
+    # Use a simple calculator server for testing
+    # Replace with any MCP server you have available
+    mcp_server_command: "python"
+    mcp_server_args:
+      - "-m"
+      - "calculator_server"
+
+  tasks:
+    - name: "=== PART 1: Test with Connection Pooling ENABLED (Phase 2) ==="
+      ansible.builtin.debug:
+        msg: "Testing with connection_reuse=true (default in Phase 2)"
+
+    - name: Pool Test 1 - Get server info (creates new pooled connection)
+      tosin2013.mcp_audit.mcp_server_info:
+        transport: stdio
+        server_command: "{{ mcp_server_command }}"
+        server_args: "{{ mcp_server_args }}"
+        connection_reuse: true  # Enable connection pooling (default)
+        connection_timeout: 300  # 5 minutes
+        timeout: 30
+      register: pooled_server_info_1
+
+    - name: Pool Test 2 - Get server info again (reuses existing connection)
+      tosin2013.mcp_audit.mcp_server_info:
+        transport: stdio
+        server_command: "{{ mcp_server_command }}"
+        server_args: "{{ mcp_server_args }}"
+        connection_reuse: true
+        connection_timeout: 300
+        timeout: 30
+      register: pooled_server_info_2
+
+    - name: Pool Test 3 - Test add tool (reuses same connection)
+      tosin2013.mcp_audit.mcp_test_tool:
+        tool_name: add
+        tool_arguments:
+          a: 10
+          b: 20
+        expected_result: 30
+        transport: stdio
+        server_command: "{{ mcp_server_command }}"
+        server_args: "{{ mcp_server_args }}"
+        connection_reuse: true  # Reuses connection from previous tasks
+        connection_timeout: 300
+        timeout: 30
+      register: pooled_tool_1
+
+    - name: Pool Test 4 - Test multiply tool (still reusing connection)
+      tosin2013.mcp_audit.mcp_test_tool:
+        tool_name: multiply
+        tool_arguments:
+          a: 6
+          b: 7
+        expected_result: 42
+        transport: stdio
+        server_command: "{{ mcp_server_command }}"
+        server_args: "{{ mcp_server_args }}"
+        connection_reuse: true
+        connection_timeout: 300
+        timeout: 30
+      register: pooled_tool_2
+
+    - name: Pool Test 5 - Test subtract tool (connection still pooled)
+      tosin2013.mcp_audit.mcp_test_tool:
+        tool_name: subtract
+        tool_arguments:
+          a: 100
+          b: 42
+        expected_result: 58
+        transport: stdio
+        server_command: "{{ mcp_server_command }}"
+        server_args: "{{ mcp_server_args }}"
+        connection_reuse: true
+        connection_timeout: 300
+        timeout: 30
+      register: pooled_tool_3
+
+    - name: Display pooled test results
+      ansible.builtin.debug:
+        msg:
+          - "Connection Pooling Test Results:"
+          - "  Server Info 1: {{ pooled_server_info_1.success }}"
+          - "  Server Info 2: {{ pooled_server_info_2.success }}"
+          - "  Tool Test 1 (add): {{ pooled_tool_1.test_passed }}"
+          - "  Tool Test 2 (multiply): {{ pooled_tool_2.test_passed }}"
+          - "  Tool Test 3 (subtract): {{ pooled_tool_3.test_passed }}"
+          - "  Total execution time with pooling: {{ pooled_server_info_1.execution_time + pooled_server_info_2.execution_time + pooled_tool_1.execution_time + pooled_tool_2.execution_time + pooled_tool_3.execution_time }} seconds"
+
+    - name: "=== PART 2: Test WITHOUT Connection Pooling (Phase 1 mode) ==="
+      ansible.builtin.debug:
+        msg: "Testing with connection_reuse=false (traditional mode)"
+
+    - name: No-Pool Test 1 - Get server info (new connection every time)
+      tosin2013.mcp_audit.mcp_server_info:
+        transport: stdio
+        server_command: "{{ mcp_server_command }}"
+        server_args: "{{ mcp_server_args }}"
+        connection_reuse: false  # Disable connection pooling
+        timeout: 30
+      register: no_pool_server_info_1
+
+    - name: No-Pool Test 2 - Get server info again (new connection)
+      tosin2013.mcp_audit.mcp_server_info:
+        transport: stdio
+        server_command: "{{ mcp_server_command }}"
+        server_args: "{{ mcp_server_args }}"
+        connection_reuse: false
+        timeout: 30
+      register: no_pool_server_info_2
+
+    - name: No-Pool Test 3 - Test add tool (new connection)
+      tosin2013.mcp_audit.mcp_test_tool:
+        tool_name: add
+        tool_arguments:
+          a: 10
+          b: 20
+        expected_result: 30
+        transport: stdio
+        server_command: "{{ mcp_server_command }}"
+        server_args: "{{ mcp_server_args }}"
+        connection_reuse: false
+        timeout: 30
+      register: no_pool_tool_1
+
+    - name: No-Pool Test 4 - Test multiply tool (new connection)
+      tosin2013.mcp_audit.mcp_test_tool:
+        tool_name: multiply
+        tool_arguments:
+          a: 6
+          b: 7
+        expected_result: 42
+        transport: stdio
+        server_command: "{{ mcp_server_command }}"
+        server_args: "{{ mcp_server_args }}"
+        connection_reuse: false
+        timeout: 30
+      register: no_pool_tool_2
+
+    - name: No-Pool Test 5 - Test subtract tool (new connection)
+      tosin2013.mcp_audit.mcp_test_tool:
+        tool_name: subtract
+        tool_arguments:
+          a: 100
+          b: 42
+        expected_result: 58
+        transport: stdio
+        server_command: "{{ mcp_server_command }}"
+        server_args: "{{ mcp_server_args }}"
+        connection_reuse: false
+        timeout: 30
+      register: no_pool_tool_3
+
+    - name: Display non-pooled test results
+      ansible.builtin.debug:
+        msg:
+          - "Traditional Connection Test Results:"
+          - "  Server Info 1: {{ no_pool_server_info_1.success }}"
+          - "  Server Info 2: {{ no_pool_server_info_2.success }}"
+          - "  Tool Test 1 (add): {{ no_pool_tool_1.test_passed }}"
+          - "  Tool Test 2 (multiply): {{ no_pool_tool_2.test_passed }}"
+          - "  Tool Test 3 (subtract): {{ no_pool_tool_3.test_passed }}"
+          - "  Total execution time without pooling: {{ no_pool_server_info_1.execution_time + no_pool_server_info_2.execution_time + no_pool_tool_1.execution_time + no_pool_tool_2.execution_time + no_pool_tool_3.execution_time }} seconds"
+
+    - name: "=== PART 3: Performance Comparison ==="
+      ansible.builtin.set_fact:
+        pooled_total_time: "{{ pooled_server_info_1.execution_time + pooled_server_info_2.execution_time + pooled_tool_1.execution_time + pooled_tool_2.execution_time + pooled_tool_3.execution_time }}"
+        no_pool_total_time: "{{ no_pool_server_info_1.execution_time + no_pool_server_info_2.execution_time + no_pool_tool_1.execution_time + no_pool_tool_2.execution_time + no_pool_tool_3.execution_time }}"
+
+    - name: Calculate performance improvement
+      ansible.builtin.set_fact:
+        time_saved: "{{ no_pool_total_time | float - pooled_total_time | float }}"
+        percent_improvement: "{{ ((no_pool_total_time | float - pooled_total_time | float) / (no_pool_total_time | float) * 100) | round(2) }}"
+
+    - name: Display performance comparison
+      ansible.builtin.debug:
+        msg:
+          - "=== PHASE 2 PERFORMANCE COMPARISON ==="
+          - "With Connection Pooling (Phase 2): {{ pooled_total_time }} seconds"
+          - "Without Connection Pooling (Phase 1): {{ no_pool_total_time }} seconds"
+          - "Time Saved: {{ time_saved }} seconds"
+          - "Performance Improvement: {{ percent_improvement }}%"
+          - ""
+          - "Expected: 50-80% improvement with connection pooling"
+
+    - name: Verify all tests passed
+      ansible.builtin.assert:
+        that:
+          # Pooled tests
+          - pooled_server_info_1.success
+          - pooled_server_info_2.success
+          - pooled_tool_1.success
+          - pooled_tool_1.test_passed
+          - pooled_tool_2.success
+          - pooled_tool_2.test_passed
+          - pooled_tool_3.success
+          - pooled_tool_3.test_passed
+          # Non-pooled tests
+          - no_pool_server_info_1.success
+          - no_pool_server_info_2.success
+          - no_pool_tool_1.success
+          - no_pool_tool_1.test_passed
+          - no_pool_tool_2.success
+          - no_pool_tool_2.test_passed
+          - no_pool_tool_3.success
+          - no_pool_tool_3.test_passed
+        fail_msg: "One or more tests failed"
+        success_msg: "All tests passed! Phase 2 connection pooling is working correctly!"
+
+    - name: Final summary
+      ansible.builtin.debug:
+        msg:
+          - "✅ Phase 2 Implementation Complete!"
+          - "✅ Connection pooling works correctly"
+          - "✅ Backward compatibility maintained (connection_reuse=false)"
+          - "✅ Performance improvement achieved: {{ percent_improvement }}%"

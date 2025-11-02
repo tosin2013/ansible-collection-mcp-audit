@@ -195,45 +195,105 @@ import asyncio
 import time
 
 from ansible.module_utils.basic import AnsibleModule
-from ansible_collections.mcp.audit.plugins.module_utils.mcp_client import (
+from ansible_collections.tosin2013.mcp_audit.plugins.module_utils.mcp_client import (
     MCPClient,
     MCPClientError,
     MCPConnectionError,
     create_mcp_client,
 )
-from ansible_collections.mcp.audit.plugins.module_utils.mcp_reporter import (
+from ansible_collections.tosin2013.mcp_audit.plugins.module_utils.mcp_reporter import (
     create_result,
 )
-from ansible_collections.mcp.audit.plugins.module_utils.mcp_validator import (
+from ansible_collections.tosin2013.mcp_audit.plugins.module_utils.mcp_validator import (
     MCPValidator,
 )
 
 
-async def test_tool_async(client: MCPClient, tool_name: str, tool_arguments: dict, expected_result=None) -> dict:
+async def test_tool_async(
+    client: MCPClient,
+    tool_name: str,
+    tool_arguments: dict,
+    expected_result=None,
+    max_retries: int = 3,
+    connection_reuse: bool = True,
+    connection_timeout: int = 300,
+) -> dict:
     """
-    Asynchronously test a tool.
+    Asynchronously test a tool with retry logic and optional connection pooling (Phase 2).
 
     Args:
         client: MCPClient instance
         tool_name: Name of the tool to test
         tool_arguments: Arguments for the tool
         expected_result: Expected result for comparison
+        max_retries: Maximum number of retry attempts for connection failures
+        connection_reuse: Enable connection pooling for better performance (default: True)
+        connection_timeout: Connection timeout in seconds for pooled connections (default: 300)
 
     Returns:
         Dictionary with test results
 
     Raises:
-        MCPClientError: If tool call fails
+        MCPClientError: If tool call fails after all retries
     """
-    async with client.connect():
-        # Call the tool
-        result = await client.call_tool(tool_name, tool_arguments)
+    from ansible_collections.tosin2013.mcp_audit.plugins.module_utils.mcp_connection_manager import (
+        get_connection_manager,
+    )
 
-        # Validate the response
-        validator = MCPValidator()
-        validation = validator.validate_tool_response(result, expected_result=expected_result)
+    retry_delay = 0.5
+    last_exception = None
 
-        return {"tool_result": result, "validation": validation}
+    for attempt in range(max_retries):
+        try:
+            if connection_reuse:
+                # Use connection pooling (Phase 2)
+                manager = get_connection_manager()
+                persistent_client = await manager.get_or_create_connection(
+                    client, timeout=connection_timeout, enable_reuse=True
+                )
+                # Call the tool using persistent connection
+                result = await persistent_client.call_tool(tool_name, tool_arguments)
+
+                # Validate the response
+                validator = MCPValidator()
+                validation = validator.validate_tool_response(result, expected_result=expected_result)
+
+                return {"tool_result": result, "validation": validation}
+            else:
+                # Use traditional context manager (Phase 1)
+                async with client.connect():
+                    # Call the tool
+                    result = await client.call_tool(tool_name, tool_arguments)
+
+                    # Validate the response
+                    validator = MCPValidator()
+                    validation = validator.validate_tool_response(result, expected_result=expected_result)
+
+                    return {"tool_result": result, "validation": validation}
+
+        except MCPConnectionError as e:
+            last_exception = e
+            error_msg = str(e)
+
+            # Only retry on specific connection errors (TaskGroup, process cleanup)
+            if ("TaskGroup" in error_msg or "unhandled errors" in error_msg) and attempt < max_retries - 1:
+                # Exponential backoff for retries
+                wait_time = retry_delay * (attempt + 1)
+                await asyncio.sleep(wait_time)
+                continue
+
+            # Re-raise if not a retryable error or out of retries
+            raise
+
+        except Exception as e:
+            # Don't retry on other types of errors
+            raise
+
+    # If we exhausted all retries, raise the last exception
+    if last_exception:
+        raise MCPConnectionError(
+            f"Failed to connect after {max_retries} attempts. Last error: {last_exception}"
+        ) from last_exception
 
 
 def run_module():
@@ -248,6 +308,8 @@ def run_module():
         "server_url": {"type": "str", "required": False},
         "server_headers": {"type": "dict", "default": {}},
         "timeout": {"type": "int", "default": 30},
+        "connection_reuse": {"type": "bool", "default": True},
+        "connection_timeout": {"type": "int", "default": 300},
     }
 
     module = AnsibleModule(argument_spec=module_args, supports_check_mode=True)
@@ -272,6 +334,8 @@ def run_module():
                 module.params["tool_name"],
                 module.params["tool_arguments"],
                 module.params.get("expected_result"),
+                connection_reuse=module.params.get("connection_reuse", True),
+                connection_timeout=module.params.get("connection_timeout", 300),
             )
         )
 
@@ -282,7 +346,7 @@ def run_module():
         test_passed = validation["valid"] and (validation["matches_expected"] is not False)
 
         # Serialize the tool result for JSON compatibility
-        from ansible_collections.mcp.audit.plugins.module_utils.mcp_reporter import MCPReporter
+        from ansible_collections.tosin2013.mcp_audit.plugins.module_utils.mcp_reporter import MCPReporter
 
         serialized_tool_result = MCPReporter._serialize_response(test_result["tool_result"])
 

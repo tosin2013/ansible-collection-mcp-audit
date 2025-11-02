@@ -153,53 +153,122 @@ import asyncio
 import time
 
 from ansible.module_utils.basic import AnsibleModule
-from ansible_collections.mcp.audit.plugins.module_utils.mcp_client import (
+from ansible_collections.tosin2013.mcp_audit.plugins.module_utils.mcp_client import (
     MCPClient,
     MCPClientError,
     MCPConnectionError,
     create_mcp_client,
 )
-from ansible_collections.mcp.audit.plugins.module_utils.mcp_reporter import (
+from ansible_collections.tosin2013.mcp_audit.plugins.module_utils.mcp_reporter import (
     create_result,
 )
 
 
-async def get_server_info_async(client: MCPClient) -> dict:
+async def get_server_info_async(
+    client: MCPClient, max_retries: int = 3, connection_reuse: bool = True, connection_timeout: int = 300
+) -> dict:
     """
-    Asynchronously get server information.
+    Asynchronously get server information with retry logic and optional connection pooling (Phase 2).
 
     Args:
         client: MCPClient instance
+        max_retries: Maximum number of retry attempts for connection failures
+        connection_reuse: Enable connection pooling for better performance (default: True)
+        connection_timeout: Connection timeout in seconds for pooled connections (default: 300)
 
     Returns:
         Server information dictionary
 
     Raises:
-        MCPClientError: If retrieval fails
+        MCPClientError: If retrieval fails after all retries
     """
-    async with client.connect():
-        info = await client.get_server_info()
+    from ansible_collections.tosin2013.mcp_audit.plugins.module_utils.mcp_connection_manager import (
+        get_connection_manager,
+    )
 
-        # Also try to get available capabilities
+    retry_delay = 0.5
+    last_exception = None
+
+    for attempt in range(max_retries):
         try:
-            tools = await client.list_tools()
-            info["available_tools"] = len(tools)
-        except Exception:
-            info["available_tools"] = None
+            if connection_reuse:
+                # Use connection pooling (Phase 2)
+                manager = get_connection_manager()
+                persistent_client = await manager.get_or_create_connection(
+                    client, timeout=connection_timeout, enable_reuse=True
+                )
+                # Get server info using persistent connection
+                info = await persistent_client.get_server_info()
 
-        try:
-            resources = await client.list_resources()
-            info["available_resources"] = len(resources)
-        except Exception:
-            info["available_resources"] = None
+                # Also try to get available capabilities
+                try:
+                    tools = await persistent_client.list_tools()
+                    info["available_tools"] = len(tools)
+                except Exception:
+                    info["available_tools"] = None
 
-        try:
-            prompts = await client.list_prompts()
-            info["available_prompts"] = len(prompts)
-        except Exception:
-            info["available_prompts"] = None
+                try:
+                    resources = await persistent_client.list_resources()
+                    info["available_resources"] = len(resources)
+                except Exception:
+                    info["available_resources"] = None
 
-        return info
+                try:
+                    prompts = await persistent_client.list_prompts()
+                    info["available_prompts"] = len(prompts)
+                except Exception:
+                    info["available_prompts"] = None
+
+                return info
+            else:
+                # Use traditional context manager (Phase 1)
+                async with client.connect():
+                    info = await client.get_server_info()
+
+                    # Also try to get available capabilities
+                    try:
+                        tools = await client.list_tools()
+                        info["available_tools"] = len(tools)
+                    except Exception:
+                        info["available_tools"] = None
+
+                    try:
+                        resources = await client.list_resources()
+                        info["available_resources"] = len(resources)
+                    except Exception:
+                        info["available_resources"] = None
+
+                    try:
+                        prompts = await client.list_prompts()
+                        info["available_prompts"] = len(prompts)
+                    except Exception:
+                        info["available_prompts"] = None
+
+                    return info
+
+        except MCPConnectionError as e:
+            last_exception = e
+            error_msg = str(e)
+
+            # Only retry on specific connection errors (TaskGroup, process cleanup)
+            if ("TaskGroup" in error_msg or "unhandled errors" in error_msg) and attempt < max_retries - 1:
+                # Exponential backoff for retries
+                wait_time = retry_delay * (attempt + 1)
+                await asyncio.sleep(wait_time)
+                continue
+
+            # Re-raise if not a retryable error or out of retries
+            raise
+
+        except Exception as e:
+            # Don't retry on other types of errors
+            raise
+
+    # If we exhausted all retries, raise the last exception
+    if last_exception:
+        raise MCPConnectionError(
+            f"Failed to connect after {max_retries} attempts. Last error: {last_exception}"
+        ) from last_exception
 
 
 def run_module():
@@ -211,6 +280,8 @@ def run_module():
         "server_url": {"type": "str", "required": False},
         "server_headers": {"type": "dict", "default": {}},
         "timeout": {"type": "int", "default": 30},
+        "connection_reuse": {"type": "bool", "default": True},
+        "connection_timeout": {"type": "int", "default": 300},
     }
 
     module = AnsibleModule(argument_spec=module_args, supports_check_mode=True)
@@ -229,7 +300,13 @@ def run_module():
         client = create_mcp_client(module.params)
 
         # Get server information
-        server_info = asyncio.run(get_server_info_async(client))
+        server_info = asyncio.run(
+            get_server_info_async(
+                client,
+                connection_reuse=module.params.get("connection_reuse", True),
+                connection_timeout=module.params.get("connection_timeout", 300),
+            )
+        )
 
         execution_time = time.time() - start_time
 

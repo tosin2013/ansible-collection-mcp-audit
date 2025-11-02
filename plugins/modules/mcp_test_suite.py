@@ -200,98 +200,194 @@ import asyncio
 import time
 
 from ansible.module_utils.basic import AnsibleModule
-from ansible_collections.mcp.audit.plugins.module_utils.mcp_client import (
+from ansible_collections.tosin2013.mcp_audit.plugins.module_utils.mcp_client import (
     MCPClient,
     MCPClientError,
     MCPConnectionError,
     create_mcp_client,
 )
-from ansible_collections.mcp.audit.plugins.module_utils.mcp_reporter import (
+from ansible_collections.tosin2013.mcp_audit.plugins.module_utils.mcp_reporter import (
     create_result,
 )
-from ansible_collections.mcp.audit.plugins.module_utils.mcp_validator import (
+from ansible_collections.tosin2013.mcp_audit.plugins.module_utils.mcp_validator import (
     MCPValidator,
 )
 
 
-async def run_test_suite_async(client: MCPClient, tests: list) -> dict:
+async def run_test_suite_async(
+    client: MCPClient, tests: list, max_retries: int = 3, connection_reuse: bool = True, connection_timeout: int = 300
+) -> dict:
     """
-    Asynchronously run a test suite.
+    Asynchronously run a test suite with retry logic and optional connection pooling (Phase 2).
 
     Args:
         client: MCPClient instance
         tests: List of test specifications
+        max_retries: Maximum number of retry attempts for connection failures
+        connection_reuse: Enable connection pooling for better performance (default: True)
+        connection_timeout: Connection timeout in seconds for pooled connections (default: 300)
 
     Returns:
         Dictionary with test results and summary
     """
-    test_results = []
-    validator = MCPValidator()
+    from ansible_collections.tosin2013.mcp_audit.plugins.module_utils.mcp_connection_manager import (
+        get_connection_manager,
+    )
 
-    async with client.connect():
-        for test_spec in tests:
-            test_type = test_spec.get("type")
-            test_result = {
-                "test_type": test_type,
-                "test_name": test_spec.get("name") or test_spec.get("uri") or "unknown",
-                "passed": False,
-                "error": None,
+    retry_delay = 0.5
+    last_exception = None
+
+    for attempt in range(max_retries):
+        try:
+            test_results = []
+            validator = MCPValidator()
+
+            if connection_reuse:
+                # Use connection pooling (Phase 2)
+                manager = get_connection_manager()
+                persistent_client = await manager.get_or_create_connection(
+                    client, timeout=connection_timeout, enable_reuse=True
+                )
+
+                # Run all tests using the persistent connection
+                for test_spec in tests:
+                    test_type = test_spec.get("type")
+                    test_result = {
+                        "test_type": test_type,
+                        "test_name": test_spec.get("name") or test_spec.get("uri") or "unknown",
+                        "passed": False,
+                        "error": None,
+                    }
+
+                    try:
+                        if test_type == "tool":
+                            tool_name = test_spec["name"]
+                            arguments = test_spec.get("arguments", {})
+                            expected = test_spec.get("expected_result")
+
+                            response = await persistent_client.call_tool(tool_name, arguments)
+                            validation = validator.validate_tool_response(response, expected_result=expected)
+                            test_result["passed"] = validation["valid"] and (validation["matches_expected"] is not False)
+                            if not test_result["passed"]:
+                                test_result["error"] = "; ".join(validation.get("errors", []))
+
+                        elif test_type == "resource":
+                            resource_uri = test_spec["uri"]
+                            expected_type = test_spec.get("expected_content_type")
+
+                            response = await persistent_client.read_resource(resource_uri)
+                            validation = validator.validate_resource_response(response, expected_content_type=expected_type)
+                            test_result["passed"] = validation["valid"]
+                            if not test_result["passed"]:
+                                test_result["error"] = "; ".join(validation.get("errors", []))
+
+                        elif test_type == "prompt":
+                            prompt_name = test_spec["name"]
+                            arguments = test_spec.get("arguments", {})
+
+                            response = await persistent_client.get_prompt(prompt_name, arguments)
+                            validation = validator.validate_prompt_response(response)
+                            test_result["passed"] = validation["valid"]
+                            if not test_result["passed"]:
+                                test_result["error"] = "; ".join(validation.get("errors", []))
+
+                        else:
+                            test_result["error"] = f"Unknown test type: {test_type}"
+
+                    except Exception as e:
+                        test_result["error"] = str(e)
+
+                    test_results.append(test_result)
+            else:
+                # Use traditional context manager (Phase 1)
+                async with client.connect():
+                    for test_spec in tests:
+                        test_type = test_spec.get("type")
+                        test_result = {
+                            "test_type": test_type,
+                            "test_name": test_spec.get("name") or test_spec.get("uri") or "unknown",
+                            "passed": False,
+                            "error": None,
+                        }
+
+                        try:
+                            if test_type == "tool":
+                                tool_name = test_spec["name"]
+                                arguments = test_spec.get("arguments", {})
+                                expected = test_spec.get("expected_result")
+
+                                response = await client.call_tool(tool_name, arguments)
+                                validation = validator.validate_tool_response(response, expected_result=expected)
+                                test_result["passed"] = validation["valid"] and (validation["matches_expected"] is not False)
+                                if not test_result["passed"]:
+                                    test_result["error"] = "; ".join(validation.get("errors", []))
+
+                            elif test_type == "resource":
+                                resource_uri = test_spec["uri"]
+                                expected_type = test_spec.get("expected_content_type")
+
+                                response = await client.read_resource(resource_uri)
+                                validation = validator.validate_resource_response(response, expected_content_type=expected_type)
+                                test_result["passed"] = validation["valid"]
+                                if not test_result["passed"]:
+                                    test_result["error"] = "; ".join(validation.get("errors", []))
+
+                            elif test_type == "prompt":
+                                prompt_name = test_spec["name"]
+                                arguments = test_spec.get("arguments", {})
+
+                                response = await client.get_prompt(prompt_name, arguments)
+                                validation = validator.validate_prompt_response(response)
+                                test_result["passed"] = validation["valid"]
+                                if not test_result["passed"]:
+                                    test_result["error"] = "; ".join(validation.get("errors", []))
+
+                            else:
+                                test_result["error"] = f"Unknown test type: {test_type}"
+
+                        except Exception as e:
+                            test_result["error"] = str(e)
+
+                        test_results.append(test_result)
+
+            # Calculate summary
+            total_tests = len(test_results)
+            passed = sum(1 for t in test_results if t["passed"])
+            failed = total_tests - passed
+            success_rate = (passed / total_tests * 100) if total_tests > 0 else 0
+
+            summary = {
+                "total_tests": total_tests,
+                "passed": passed,
+                "failed": failed,
+                "success_rate": round(success_rate, 2),
             }
 
-            try:
-                if test_type == "tool":
-                    tool_name = test_spec["name"]
-                    arguments = test_spec.get("arguments", {})
-                    expected = test_spec.get("expected_result")
+            return {"test_results": test_results, "summary": summary}
 
-                    response = await client.call_tool(tool_name, arguments)
-                    validation = validator.validate_tool_response(response, expected_result=expected)
-                    test_result["passed"] = validation["valid"] and (validation["matches_expected"] is not False)
-                    if not test_result["passed"]:
-                        test_result["error"] = "; ".join(validation.get("errors", []))
+        except MCPConnectionError as e:
+            last_exception = e
+            error_msg = str(e)
 
-                elif test_type == "resource":
-                    resource_uri = test_spec["uri"]
-                    expected_type = test_spec.get("expected_content_type")
+            # Only retry on specific connection errors (TaskGroup, process cleanup)
+            if ("TaskGroup" in error_msg or "unhandled errors" in error_msg) and attempt < max_retries - 1:
+                # Exponential backoff for retries
+                wait_time = retry_delay * (attempt + 1)
+                await asyncio.sleep(wait_time)
+                continue
 
-                    response = await client.read_resource(resource_uri)
-                    validation = validator.validate_resource_response(response, expected_content_type=expected_type)
-                    test_result["passed"] = validation["valid"]
-                    if not test_result["passed"]:
-                        test_result["error"] = "; ".join(validation.get("errors", []))
+            # Re-raise if not a retryable error or out of retries
+            raise
 
-                elif test_type == "prompt":
-                    prompt_name = test_spec["name"]
-                    arguments = test_spec.get("arguments", {})
+        except Exception as e:
+            # Don't retry on other types of errors
+            raise
 
-                    response = await client.get_prompt(prompt_name, arguments)
-                    validation = validator.validate_prompt_response(response)
-                    test_result["passed"] = validation["valid"]
-                    if not test_result["passed"]:
-                        test_result["error"] = "; ".join(validation.get("errors", []))
-
-                else:
-                    test_result["error"] = f"Unknown test type: {test_type}"
-
-            except Exception as e:
-                test_result["error"] = str(e)
-
-            test_results.append(test_result)
-
-    # Calculate summary
-    total_tests = len(test_results)
-    passed = sum(1 for t in test_results if t["passed"])
-    failed = total_tests - passed
-    success_rate = (passed / total_tests * 100) if total_tests > 0 else 0
-
-    summary = {
-        "total_tests": total_tests,
-        "passed": passed,
-        "failed": failed,
-        "success_rate": round(success_rate, 2),
-    }
-
-    return {"test_results": test_results, "summary": summary}
+    # If we exhausted all retries, raise the last exception
+    if last_exception:
+        raise MCPConnectionError(
+            f"Failed to connect after {max_retries} attempts. Last error: {last_exception}"
+        ) from last_exception
 
 
 def run_module():
@@ -305,6 +401,8 @@ def run_module():
         "server_url": {"type": "str", "required": False},
         "server_headers": {"type": "dict", "default": {}},
         "timeout": {"type": "int", "default": 30},
+        "connection_reuse": {"type": "bool", "default": True},
+        "connection_timeout": {"type": "int", "default": 300},
     }
 
     module = AnsibleModule(argument_spec=module_args, supports_check_mode=True)
@@ -327,7 +425,14 @@ def run_module():
         client = create_mcp_client(module.params)
 
         # Run test suite
-        suite_result = asyncio.run(run_test_suite_async(client, module.params["tests"]))
+        suite_result = asyncio.run(
+            run_test_suite_async(
+                client,
+                module.params["tests"],
+                connection_reuse=module.params.get("connection_reuse", True),
+                connection_timeout=module.params.get("connection_timeout", 300),
+            )
+        )
 
         execution_time = time.time() - start_time
 

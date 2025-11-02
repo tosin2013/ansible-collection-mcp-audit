@@ -255,7 +255,7 @@ except ImportError as e:
     LITELLM_IMPORT_ERROR = str(e)
 
 from ansible.module_utils.basic import AnsibleModule, missing_required_lib
-from ansible_collections.mcp.audit.plugins.module_utils.mcp_client import MCPClient
+from ansible_collections.tosin2013.mcp_audit.plugins.module_utils.mcp_client import MCPClient
 
 
 def convert_mcp_tools_to_llm_format(mcp_tools: list[Any]) -> list[dict]:
