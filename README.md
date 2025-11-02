@@ -22,11 +22,18 @@ Ansible collection for testing and auditing [Model Context Protocol (MCP)](https
 
 ## Installation
 
-### From Ansible Galaxy (Coming Soon)
+### From Ansible Galaxy
 
 ```bash
 ansible-galaxy collection install mcp.audit
 ```
+
+The collection is automatically published to [Ansible Galaxy](https://galaxy.ansible.com/ui/repo/published/mcp/audit/) when:
+- A new version tag (e.g., `v1.1.0`) is pushed
+- All CI tests pass successfully
+- Dependabot updates are merged
+
+See [docs/GALAXY-PUBLISHING.md](docs/GALAXY-PUBLISHING.md) for details on the publishing workflow.
 
 ### From Source
 
@@ -47,7 +54,7 @@ ansible-galaxy collection install mcp-audit-*.tar.gz
 
 ## Requirements
 
-- **Python**: 3.9 or later
+- **Python**: 3.10 or later (MCP SDK requirement; see [Issue #19](https://github.com/tosin2013/ansible-collection-mcp-audit/issues/19))
 - **Ansible**: ansible-core 2.15.0 or later
 - **MCP Python SDK**: 1.19.0 or later (automatically installed)
 - **Operating Systems**: Linux (RHEL 9+, Ubuntu 20.04+, Debian 11+), macOS 11+
@@ -117,6 +124,7 @@ ansible-galaxy collection install mcp-audit-*.tar.gz
 ## Documentation
 
 - **[Installation Guide](docs/installation.md)** (Coming Soon)
+- **[Galaxy Publishing Guide](docs/GALAXY-PUBLISHING.md)** - How to publish to Ansible Galaxy
 - **[Module Documentation](docs/modules/)** (Coming Soon)
 - **[Examples](docs/examples/)** (Coming Soon)
 - **[Architectural Decision Records](docs/adrs/README.md)**
@@ -214,7 +222,7 @@ Contributions are welcome! Please see our [Contributing Guidelines](CONTRIBUTING
 - ✅ Core modules implementation (Phase 3) - **COMPLETE**
 - ✅ Integration testing (Phase 4) - **COMPLETE**
 - 🚧 Documentation and examples (Phase 5) - **IN PROGRESS**
-- ⏳ Galaxy publication (Phase 6)
+- 🚧 Galaxy publication (Phase 6) - **IN PROGRESS** (Automated workflow ready)
 
 ### Version 1.1.0 (Released: 2025-10-30)
 
@@ -223,7 +231,7 @@ Contributions are welcome! Please see our [Contributing Guidelines](CONTRIBUTING
 - ✅ Multi-provider support (Ollama, OpenRouter, vLLM, 100+ providers)
 - ✅ Secure credential management with Ansible Vault
 
-**Current Status**: 85% complete, preparing for Galaxy publication
+**Current Status**: 90% complete, Galaxy publishing workflow ready
 
 See [IMPLEMENTATION-PLAN.md](docs/IMPLEMENTATION-PLAN.md) for the complete roadmap.
 
@@ -242,6 +250,6 @@ See [IMPLEMENTATION-PLAN.md](docs/IMPLEMENTATION-PLAN.md) for the complete roadm
 
 ---
 
-**Status**: 🚀 Ready for Documentation and Galaxy Publication (85% Complete)
-**Version**: 1.0.0-dev
-**Last Updated**: 2025-10-30
+**Status**: 🚀 Ready for Galaxy Publication (90% Complete)
+**Version**: 1.0.0
+**Last Updated**: 2025-11-02
