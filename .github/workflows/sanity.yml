@@ -18,13 +18,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # Test matrix: 7 valid combinations (explicit include to avoid incompatible versions)
+        # Test matrix: 6 valid combinations
+        # MCP SDK requires Python >=3.10 (see Issue #19)
         # ansible-core 2.16+ requires Python >=3.10
         include:
-          # Python 3.9 - only ansible-core 2.15 (2.16+ require Python >=3.10)
-          - python-version: '3.9'
-            ansible-version: '2.15'
-
           # Python 3.11 - all ansible-core versions
           - python-version: '3.11'
             ansible-version: '2.15'
