@@ -20,7 +20,7 @@ __metaclass__ = type
 import asyncio
 import hashlib
 import time
-from typing import Any, Dict, Optional
+from typing import Any, Optional
 
 from ansible_collections.tosin2013.mcp_audit.plugins.module_utils.mcp_client import MCPClient
 
@@ -76,10 +76,10 @@ class MCPConnectionManager:
     def __init__(self):
         """Initialize the connection manager (only once)."""
         if not self._initialized:
-            self._connections: Dict[str, MCPClient] = {}
-            self._locks: Dict[str, asyncio.Lock] = {}
-            self._connection_times: Dict[str, float] = {}
-            self._connection_use_counts: Dict[str, int] = {}
+            self._connections: dict[str, MCPClient] = {}
+            self._locks: dict[str, asyncio.Lock] = {}
+            self._connection_times: dict[str, float] = {}
+            self._connection_use_counts: dict[str, int] = {}
             self._default_timeout = 300  # 5 minutes
             self._initialized = True
 
@@ -234,7 +234,7 @@ class MCPConnectionManager:
 
         return closed_count
 
-    def get_connection_stats(self) -> Dict[str, Any]:
+    def get_connection_stats(self) -> dict[str, Any]:
         """
         Get statistics about current connections.
 

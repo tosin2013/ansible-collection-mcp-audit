@@ -292,7 +292,7 @@ class MCPClient:
         """
         # Close session context
         if self._session_context:
-            try:
+            try:  # noqa: SIM105
                 await self._session_context.__aexit__(None, None, None)
             except Exception:
                 # Ignore errors during cleanup
@@ -302,7 +302,7 @@ class MCPClient:
 
         # Close stdio/sse context
         if self._stdio_context:
-            try:
+            try:  # noqa: SIM105
                 await self._stdio_context.__aexit__(None, None, None)
             except Exception:
                 # Ignore errors during cleanup

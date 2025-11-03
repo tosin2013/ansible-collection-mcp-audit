@@ -275,7 +275,7 @@ async def get_server_info_async(
             # Re-raise if not a retryable error or out of retries
             raise
 
-        except Exception as e:
+        except Exception:
             # Don't retry on other types of errors
             raise
 
