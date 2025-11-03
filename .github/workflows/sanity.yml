@@ -42,7 +42,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v5
         with:
-          path: ansible_collections/mcp/audit
+          path: ansible_collections/tosin2013/mcp_audit
 
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v6
@@ -55,13 +55,13 @@ jobs:
           pip install ansible-core~=${{ matrix.ansible-version }}.0
 
       - name: Install collection dependencies
-        working-directory: ansible_collections/mcp/audit
+        working-directory: ansible_collections/tosin2013/mcp_audit
         run: |
           pip install -r requirements.txt
           pip install -r requirements-dev.txt
 
       - name: Run ansible-test sanity
-        working-directory: ansible_collections/mcp/audit
+        working-directory: ansible_collections/tosin2013/mcp_audit
         run: |
           ansible-test sanity --python ${{ matrix.python-version }} --docker default
         continue-on-error: ${{ matrix.python-version == '3.13' }}  # Allow 3.13 to fail initially
