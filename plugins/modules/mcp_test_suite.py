@@ -282,7 +282,9 @@ async def run_test_suite_async(
 
                             response = await persistent_client.call_tool(tool_name, arguments)
                             validation = validator.validate_tool_response(response, expected_result=expected)
-                            test_result["passed"] = validation["valid"] and (validation["matches_expected"] is not False)
+                            test_result["passed"] = validation["valid"] and (
+                                validation["matches_expected"] is not False
+                            )
                             if not test_result["passed"]:
                                 test_result["error"] = "; ".join(validation.get("errors", []))
 
@@ -291,7 +293,9 @@ async def run_test_suite_async(
                             expected_type = test_spec.get("expected_content_type")
 
                             response = await persistent_client.read_resource(resource_uri)
-                            validation = validator.validate_resource_response(response, expected_content_type=expected_type)
+                            validation = validator.validate_resource_response(
+                                response, expected_content_type=expected_type
+                            )
                             test_result["passed"] = validation["valid"]
                             if not test_result["passed"]:
                                 test_result["error"] = "; ".join(validation.get("errors", []))
@@ -333,7 +337,9 @@ async def run_test_suite_async(
 
                                 response = await client.call_tool(tool_name, arguments)
                                 validation = validator.validate_tool_response(response, expected_result=expected)
-                                test_result["passed"] = validation["valid"] and (validation["matches_expected"] is not False)
+                                test_result["passed"] = validation["valid"] and (
+                                    validation["matches_expected"] is not False
+                                )
                                 if not test_result["passed"]:
                                     test_result["error"] = "; ".join(validation.get("errors", []))
 
@@ -342,7 +348,9 @@ async def run_test_suite_async(
                                 expected_type = test_spec.get("expected_content_type")
 
                                 response = await client.read_resource(resource_uri)
-                                validation = validator.validate_resource_response(response, expected_content_type=expected_type)
+                                validation = validator.validate_resource_response(
+                                    response, expected_content_type=expected_type
+                                )
                                 test_result["passed"] = validation["valid"]
                                 if not test_result["passed"]:
                                     test_result["error"] = "; ".join(validation.get("errors", []))

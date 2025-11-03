@@ -255,7 +255,9 @@ async def test_resource_async(
 
                     # Validate the response
                     validator = MCPValidator()
-                    validation = validator.validate_resource_response(result, expected_content_type=expected_content_type)
+                    validation = validator.validate_resource_response(
+                        result, expected_content_type=expected_content_type
+                    )
 
                     return {"resource_content": result, "validation": validation}
 
