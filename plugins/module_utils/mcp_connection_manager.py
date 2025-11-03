@@ -22,10 +22,7 @@ import hashlib
 import time
 from typing import Any, Dict, Optional
 
-from ansible_collections.tosin2013.mcp_audit.plugins.module_utils.mcp_client import (
-    MCPClient,
-    MCPClientError,
-)
+from ansible_collections.tosin2013.mcp_audit.plugins.module_utils.mcp_client import MCPClient
 
 
 class MCPConnectionError(Exception):

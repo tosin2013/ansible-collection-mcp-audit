@@ -176,6 +176,9 @@ from ansible_collections.tosin2013.mcp_audit.plugins.module_utils.mcp_client imp
     MCPConnectionError,
     create_mcp_client,
 )
+from ansible_collections.tosin2013.mcp_audit.plugins.module_utils.mcp_connection_manager import (
+    get_connection_manager,
+)
 from ansible_collections.tosin2013.mcp_audit.plugins.module_utils.mcp_reporter import (
     create_result,
 )
@@ -209,10 +212,6 @@ async def test_resource_async(
     Raises:
         MCPClientError: If resource read fails after all retries
     """
-    from ansible_collections.tosin2013.mcp_audit.plugins.module_utils.mcp_connection_manager import (
-        get_connection_manager,
-    )
-
     retry_delay = 0.5
     last_exception = None
 

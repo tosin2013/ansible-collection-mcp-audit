@@ -206,6 +206,9 @@ from ansible_collections.tosin2013.mcp_audit.plugins.module_utils.mcp_client imp
     MCPConnectionError,
     create_mcp_client,
 )
+from ansible_collections.tosin2013.mcp_audit.plugins.module_utils.mcp_connection_manager import (
+    get_connection_manager,
+)
 from ansible_collections.tosin2013.mcp_audit.plugins.module_utils.mcp_reporter import (
     create_result,
 )
@@ -230,10 +233,6 @@ async def run_test_suite_async(
     Returns:
         Dictionary with test results and summary
     """
-    from ansible_collections.tosin2013.mcp_audit.plugins.module_utils.mcp_connection_manager import (
-        get_connection_manager,
-    )
-
     retry_delay = 0.5
     last_exception = None
 
