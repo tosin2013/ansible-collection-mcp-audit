@@ -66,6 +66,22 @@ options:
       - Connection timeout in seconds.
     type: int
     default: 30
+  connection_reuse:
+    description:
+      - Enable connection pooling for better performance.
+      - When enabled, connections are reused across multiple module calls.
+      - Significantly improves performance for sequential operations.
+    type: bool
+    default: true
+    version_added: "1.1.0"
+  connection_timeout:
+    description:
+      - Connection timeout in seconds for pooled connections.
+      - Only applicable when I(connection_reuse=true).
+      - Connections are automatically closed after this timeout.
+    type: int
+    default: 300
+    version_added: "1.1.0"
 notes:
   - Requires the MCP Python SDK (>=1.19.0) to be installed.
   - The resource must exist on the server and be accessible.

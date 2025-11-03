@@ -1,2 +1,3 @@
-tests/integration/sample_servers/nodejs-resources/node_modules/ no-smart-quotes
-tests/integration/sample_servers/nodejs-resources/node_modules/ shebang
+tests/integration/sample_servers/nodejs-resources/node_modules/* no-smart-quotes
+tests/integration/sample_servers/nodejs-resources/node_modules/* shebang
+tests/integration/sample_servers/nodejs-resources/src/server.ts shebang
