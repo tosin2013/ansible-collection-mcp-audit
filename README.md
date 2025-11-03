@@ -17,6 +17,7 @@ Ansible collection for testing and auditing [Model Context Protocol (MCP)](https
 - **Prompt Testing**: Test prompt templates with argument validation
 - **Test Suites**: Orchestrate multiple tests with comprehensive reporting
 - **LLM Integration**: End-to-end testing with real LLMs via LiteLLM (100+ providers supported)
+- **Connection Pooling**: Reuse connections across module calls for better performance (v1.1.0+)
 - **Multi-Transport**: Support for stdio, SSE (Server-Sent Events), and HTTP transports
 - **Cross-Language**: Tested with Python and TypeScript MCP servers
 - **RHEL Ready**: Compatible with RHEL 9/10, Python 3.9-3.13, ansible-core 2.15-2.17
@@ -29,7 +30,7 @@ Ansible collection for testing and auditing [Model Context Protocol (MCP)](https
 ansible-galaxy collection install tosin2013.mcp_audit
 ```
 
-The collection is automatically published to [Ansible Galaxy](https://galaxy.ansible.com/ui/repo/published/tosin2013/mcp_audit/) when a version tag (e.g., `v1.1.0`) is pushed to the repository after all CI tests pass
+The collection is automatically published to [Ansible Galaxy](https://galaxy.ansible.com/ui/repo/published/tosin2013/mcp_audit/) when a version tag (e.g., `v1.1.1`) is pushed to the repository after all CI tests pass
 
 See [docs/GALAXY-PUBLISHING.md](docs/GALAXY-PUBLISHING.md) for details on the publishing workflow.
 
@@ -126,8 +127,8 @@ ansible-galaxy collection install mcp-audit-*.tar.gz
 - **[Security Policy](SECURITY.md)** - Security reporting and vulnerability policy
 - **[Contributing Guidelines](CONTRIBUTING.md)** - How to contribute to the project
 - **[AI Agent Guidelines](AGENTS.md)** - Coding best practices for AI agents
-- **[Module Documentation](docs/modules/)** - _Coming in v1.1.0_
-- **[Examples & Tutorials](docs/examples/)** - _Coming in v1.1.0_
+- **Module Documentation** - See built-in `ansible-doc` for each module
+- **Examples & Tutorials** - See integration tests in `tests/integration/`
 
 ## Development
 
@@ -229,7 +230,14 @@ Contributions are welcome! Please see our [Contributing Guidelines](CONTRIBUTING
 - ✅ Multi-provider support (Ollama, OpenRouter, vLLM, 100+ providers)
 - ✅ Secure credential management with Ansible Vault
 
-**Current Status**: ✅ v1.0.0 Published to Galaxy | 95% complete (Documentation in progress)
+### Version 1.1.1 (Released: 2025-11-03)
+
+- ✅ Bug fixes for GitHub Actions workflows
+- ✅ Code quality improvements (ruff linting and formatting)
+- ✅ Enhanced documentation for connection pooling features
+- ✅ Python 3.11 and 3.13 compatibility verified across ansible-core 2.15-2.17
+
+**Current Status**: ✅ v1.1.1 Published to Galaxy | Production ready
 
 ## Credits
 
@@ -247,6 +255,6 @@ Contributions are welcome! Please see our [Contributing Guidelines](CONTRIBUTING
 ---
 
 **Status**: ✅ Published to Ansible Galaxy
-**Version**: 1.0.0
+**Version**: 1.1.1
 **Galaxy**: [tosin2013.mcp_audit](https://galaxy.ansible.com/ui/repo/published/tosin2013/mcp_audit/)
-**Last Updated**: 2025-11-02
+**Last Updated**: 2025-11-03
