@@ -1,5 +1,49 @@
----
 objects:
   role: {}
-plugins: {}
-version: 1.0.0
+plugins:
+  become: {}
+  cache: {}
+  callback: {}
+  cliconf: {}
+  connection: {}
+  filter: {}
+  httpapi: {}
+  inventory: {}
+  lookup: {}
+  module:
+    mcp_server_info:
+      description: Get information about an MCP server
+      name: mcp_server_info
+      namespace: ''
+      version_added: 1.0.0
+    mcp_test_llm_integration:
+      description: Test MCP server with real LLM integration
+      name: mcp_test_llm_integration
+      namespace: ''
+      version_added: 1.1.0
+    mcp_test_prompt:
+      description: Test an MCP server prompt
+      name: mcp_test_prompt
+      namespace: ''
+      version_added: 1.0.0
+    mcp_test_resource:
+      description: Test an MCP server resource
+      name: mcp_test_resource
+      namespace: ''
+      version_added: 1.0.0
+    mcp_test_suite:
+      description: Run a suite of MCP server tests
+      name: mcp_test_suite
+      namespace: ''
+      version_added: 1.0.0
+    mcp_test_tool:
+      description: Test an MCP server tool
+      name: mcp_test_tool
+      namespace: ''
+      version_added: 1.0.0
+  netconf: {}
+  shell: {}
+  strategy: {}
+  test: {}
+  vars: {}
+version: 1.1.1

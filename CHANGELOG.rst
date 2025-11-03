@@ -4,6 +4,29 @@ Mcp.Audit Release Notes
 
 .. contents:: Topics
 
+v1.1.1
+======
+
+Release Summary
+---------------
+
+Bug fix release resolving GitHub Actions workflow failures, code quality issues,
+and documentation improvements for Phase 2 connection pooling features.
+
+Minor Changes
+-------------
+
+- Add comprehensive documentation for connection_reuse and connection_timeout parameters
+
+Bugfixes
+--------
+
+- Apply ruff code formatting to test modules
+- Correct collection namespace path in GitHub Actions workflow (tosin2013/mcp_audit)
+- Fix ruff linter errors including deprecated type hints and unused exception variables
+- Resolve ansible-test sanity failures for Python 3.11 by moving imports to module level
+- Update sanity test ignore patterns to properly exclude test infrastructure files
+
 v1.0.0
 ======
 
