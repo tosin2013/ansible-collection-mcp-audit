@@ -1,1 +1,2 @@
+tests/integration/sample_servers/nodejs-resources/src/server.ts shebang
 tests/integration/sample_servers/prompts/server.py pylint:consider-using-from-import
