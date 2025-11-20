@@ -6,6 +6,7 @@
 [![License](https://img.shields.io/badge/License-GPL%203.0%20or%20later-blue.svg)](COPYING)
 [![REUSE status](https://api.reuse.software/badge/github.com/tosin2013/ansible-collection-mcp-audit)](https://api.reuse.software/info/github.com/tosin2013/ansible-collection-mcp-audit)
 [![Galaxy](https://img.shields.io/badge/galaxy-tosin2013.mcp__audit-blue.svg)](https://galaxy.ansible.com/ui/repo/published/tosin2013/mcp_audit/)
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/tosin2013/ansible-collection-mcp-audit)
 
 Ansible collection for testing and auditing [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) servers. Provides comprehensive modules to verify MCP server implementations, test tools, resources, and prompts with detailed reporting capabilities.
 
