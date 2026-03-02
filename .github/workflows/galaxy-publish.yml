@@ -80,7 +80,7 @@ jobs:
           ansible-galaxy collection build
 
       - name: Upload collection artifact
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: collection
           path: "*.tar.gz"
