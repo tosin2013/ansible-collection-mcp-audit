@@ -95,7 +95,7 @@ jobs:
       url: https://galaxy.ansible.com/ui/repo/published/tosin2013/mcp_audit/
     steps:
       - name: Download collection artifact
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v8
         with:
           name: collection
 
