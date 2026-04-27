@@ -16,7 +16,7 @@ pre-commit>=3.6.0            # Pre-commit hooks
 pytest>=7.4.0                # Unit testing framework
 pytest-cov>=4.1.0            # Coverage reporting
 pytest-ansible>=3.1.0        # Ansible-specific pytest helpers
-pytest-mock>=3.12.0          # Mocking support
+pytest-mock>=3.15.1          # Mocking support
 pytest-asyncio>=1.2.0        # Async test support
 
 # Type stubs for mypy
