@@ -9,7 +9,7 @@ ruff>=0.3.0                  # Fast Python linter and formatter (replaces flake8
 mypy>=1.8.0                  # Type checking
 yamllint>=1.35.0             # YAML linting
 ansible-lint>=24.2.0         # Ansible best practices
-reuse>=3.0.0                 # License compliance (ADR-0008)
+reuse>=5.1.1                 # License compliance (ADR-0008)
 pre-commit>=3.6.0            # Pre-commit hooks
 
 # Testing tools (ADR-0005)
