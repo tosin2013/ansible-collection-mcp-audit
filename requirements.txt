@@ -9,7 +9,7 @@ mcp>=1.19.0
 # LiteLLM - Unified interface to 100+ LLM providers
 # See ADR-0016 for LiteLLM integration strategy
 # Optional dependency for mcp_test_llm_integration module
-litellm>=1.0.0
+litellm>=1.83.9
 
 # Ansible Core - Minimum version for RHEL 9 support
 # See ADR-0013: Python 3.9+ and ansible-core 2.15+ for RHEL 9/10
